@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Граматика хорватської · шпаргалка A1→B1</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+<style>
+  .b1 { background: var(--c1, #2e86de); color: #fff; }
+  .b2 { background: var(--c2, #e67e22); color: #fff; }
+  .b3 { background: var(--c3, #8e44ad); color: #fff; }
+  .ball { background: var(--muted, #667); color: #fff; }
+  .g-section { scroll-margin-top: 4rem; margin: 2.5rem 0; }
+  .g-section > h2 { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+  .g-section h3 { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-top: 1.6rem; }
+  .toc { position: sticky; top: 0; z-index: 5; }
+  .toc ol { display: flex; flex-wrap: wrap; gap: .35rem .9rem; margin: .4rem 0 0; padding-left: 1.2rem; }
+  .toc li { min-width: 12rem; }
+  .totop { font-size: .85rem; display: inline-block; margin-top: .6rem; }
+  .scroll { overflow-x: auto; }
+  table.ref .e, .e { color: #d6336c; font-weight: 700; }
+  table.ref td.q { font-style: italic; color: var(--muted, #667); }
+  table.ref th.case { white-space: nowrap; }
+  .legend { display: flex; flex-wrap: wrap; gap: .5rem; margin: .5rem 0; }
+  /* clitic diagram */
+  .cl-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: .35rem; margin: 1rem 0; }
+  .cl-box { border-radius: 8px; padding: .45rem .6rem; text-align: center; min-width: 4.4rem; border: 2px solid transparent; }
+  .cl-box small { display: block; font-size: .72rem; opacity: .85; }
+  .cl-box b { display: block; font-size: 1rem; }
+  .cl-num { display: inline-block; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: rgba(0,0,0,.18); font-size: .75rem; line-height: 1.3rem; }
+  .cl-first { border: 2px dashed var(--border, #999); }
+  .cl-rest  { border: 2px dashed var(--border, #999); opacity: .8; }
+  .cl-arrow { align-self: center; font-size: 1.3rem; color: var(--muted, #667); }
+  .cl-li  { background: rgba(231, 76, 60, .22); }
+  .cl-aux { background: rgba(230, 126, 34, .25); }
+  .cl-dat { background: rgba(241, 196, 15, .30); }
+  .cl-acc { background: rgba(46, 204, 113, .25); }
+  .cl-gen { background: rgba(26, 188, 156, .25); }
+  .cl-se  { background: rgba(52, 152, 219, .25); }
+  .cl-je  { background: rgba(155, 89, 182, .25); }
+  .chip { border-radius: 5px; padding: 0 .25rem; font-weight: 700; }
+  /* numbers 1 / 2-4 / 5+ */
+  .num3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .8rem; margin: 1rem 0; }
+  .num3 > div { border-radius: 10px; padding: .8rem 1rem; border: 2px solid var(--border, #ccc); }
+  .num3 h4 { margin: 0 0 .3rem; font-size: 1.4rem; }
+  .num3 .n1 { border-color: var(--c1, #2e86de); }
+  .num3 .n2 { border-color: var(--c2, #e67e22); }
+  .num3 .n5 { border-color: var(--c3, #8e44ad); }
+  .ok { color: #2e8b57; font-weight: 700; }
+  .bad { color: #c0392b; font-weight: 700; text-decoration: line-through; }
+  .letters { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: .5rem; margin: 1rem 0; }
+  .letter { border: 1px solid var(--border, #ccc); border-radius: 8px; padding: .5rem .6rem; background: var(--surface, transparent); }
+  .letter .big { font-size: 1.6rem; font-weight: 700; }
+  .letter .eq { font-size: 1.1rem; }
+  .letter small { display: block; color: var(--muted, #667); }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">Огляд</a>
+  <a href="phase-1.html">Етап 1 · A1→A2</a>
+  <a href="phase-2.html">Етап 2 · A2→B1.1</a>
+  <a href="phase-3.html">Етап 3 · B1</a>
+  <a href="grammar.html" class="active">Граматика</a>
+  <a href="vocab.html">Словник</a>
+  <a href="cards.html">Картки</a>
+  <a href="chat.html">AI-чат</a>
+</nav>
+
+<main class="container">
+
+<header class="hero" id="top">
+  <h1>Граматика хорватської — шпаргалка</h1>
+  <p>Уся граматика програми A1 → B1 на одній сторінці. Кольоровий значок біля кожного розділу показує, на якому етапі тема вивчається:
+    <span class="badge b1">Етап 1</span> <span class="badge b2">Етап 2</span> <span class="badge b3">Етап 3</span> <span class="badge ball">Усі етапи</span>.
+    Закінчення виділено <b class="e">кольором</b>. Норма — стандартна хорватська (ijekavica: <span class="hr">mlijeko, vrijeme, lijep</span>).</p>
+</header>
+
+<nav class="card toc" aria-label="Зміст">
+  <strong>Зміст</strong>
+  <ol>
+    <li><a href="#alphabet">Алфавіт і вимова</a></li>
+    <li><a href="#nouns">Іменники</a></li>
+    <li><a href="#adjectives">Прикметники</a></li>
+    <li><a href="#pronouns">Займенники</a></li>
+    <li><a href="#clitics">Енклітики</a></li>
+    <li><a href="#verbs">Дієслова</a></li>
+    <li><a href="#numbers">Числівники</a></li>
+    <li><a href="#syntax">Порядок слів і складні речення</a></li>
+    <li><a href="#false-friends">Хибні друзі перекладача</a></li>
+    <li><a href="#hr-vs-sr">Хорватська vs сербська</a></li>
+  </ol>
+</nav>
+
+<!-- ============ 1. ALPHABET ============ -->
+<section class="g-section" id="alphabet">
+  <h2>1. Алфавіт і вимова <span class="badge b1">Етап 1</span></h2>
+  <p>Хорватська абетка — латинська, 30 літер. Пишемо так, як вимовляємо: одна літера (або диграф) = один звук. Більшість звуків є в українській — складність лише в кількох парах.</p>
+
+  <div class="letters">
+    <div class="letter"><span class="big hr">c</span> = <span class="eq">ц</span><small><span class="hr">cijena</span> — ціна</small></div>
+    <div class="letter"><span class="big hr">č</span> = <span class="eq">ч</span><small>тверде: <span class="hr">čaj, čovjek</span></small></div>
+    <div class="letter"><span class="big hr">ć</span> ≈ <span class="eq">чь</span><small>м'якше за ч (між «ч» і «ть'»): <span class="hr">kuća, noć</span></small></div>
+    <div class="letter"><span class="big hr">dž</span> = <span class="eq">дж</span><small>тверде: <span class="hr">džep</span> — кишеня</small></div>
+    <div class="letter"><span class="big hr">đ</span> ≈ <span class="eq">дьж</span><small>м'яке дж: <span class="hr">đak, rođendan</span></small></div>
+    <div class="letter"><span class="big hr">lj</span> = <span class="eq">ль</span><small><span class="hr">ljubav, prijatelj</span></small></div>
+    <div class="letter"><span class="big hr">nj</span> = <span class="eq">нь</span><small><span class="hr">konj, knjiga</span></small></div>
+    <div class="letter"><span class="big hr">š</span> = <span class="eq">ш</span><small><span class="hr">škola</span></small></div>
+    <div class="letter"><span class="big hr">ž</span> = <span class="eq">ж</span><small><span class="hr">žena, život</span></small></div>
+    <div class="letter"><span class="big hr">h</span> = <span class="eq">х</span><small><span class="hr">hvala, kruh</span></small></div>
+    <div class="letter"><span class="big hr">g</span> = <span class="eq">ґ</span><small>завжди проривне! <span class="hr">grad</span> = «ґрад»</small></div>
+    <div class="letter"><span class="big hr">j</span> = <span class="eq">й</span><small><span class="hr">ja</span> = «я», <span class="hr">jelo</span> = «єло»</small></div>
+    <div class="letter"><span class="big hr">e</span> = <span class="eq">е</span><small>не «є»: <span class="hr">pet</span> = «пет»</small></div>
+    <div class="letter"><span class="big hr">i</span> = <span class="eq">і</span><small>звука «и» немає: <span class="hr">riba</span></small></div>
+    <div class="letter"><span class="big hr">v</span> = <span class="eq">в</span><small>не «ў»: <span class="hr">vlak</span></small></div>
+    <div class="letter"><span class="big hr">r̥</span> складотв.<small>r між приголосними = голосний: <span class="hr">prst, crn, trg, vrt, Hrvatska</span></small></div>
+  </div>
+
+  <div class="tip"><b>Складотворне r.</b> У словах <span class="hr">prst</span> (палець), <span class="hr">crn</span> (чорний), <span class="hr">srce</span> (серце), <span class="hr">Hrvatska</span> звук <span class="hr">r</span> сам утворює склад — не вставляйте голосний: «прст», а не «пирст»; <span class="hr">Hr-vat-ska</span> — три склади.</div>
+
+  <div class="tip"><b>č / ć і dž / đ.</b> <span class="hr">č, dž</span> — тверді (як у «чай», «джерело»), <span class="hr">ć, đ</span> — м'які, язик ближче до зубів. Багато носіїв у розмові їх змішують, але на письмі різниця обов'язкова: <span class="hr">kuća</span> (дім), <span class="hr">čaša</span> (склянка), <span class="hr">vruće</span> (гаряче).</div>
+
+  <div class="tip"><b>ije / je (ijekavica).</b> Старе «ѣ» у хорватській дає <span class="hr">ije</span> в довгому складі (<span class="hr">mlijeko, lijep, vrijeme, rijeka</span>) і <span class="hr">je</span> в короткому (<span class="hr">mjesto, vjera, djevojka</span>). Пор. укр. «і»: <span class="hr">mlijeko</span> — молоко, <span class="hr">lijep</span> — ліпий/гарний, <span class="hr">vjera</span> — віра.</div>
+
+  <div class="warn"><b>Наголос.</b> У хорватській 4 типи наголосу (короткий/довгий × висхідний/низхідний) і довгі ненаголошені голосні; на письмі їх не позначають. Практичні правила для B1: (1) у багатоскладових питомих словах наголос <b>ніколи не падає на останній склад</b>; (2) наголос може «перестрибнути» на прийменник: <span class="hr">u grad</span> → «Ú grad»; (3) запам'ятовуйте наголос разом зі словом зі слуху — він часто не збігається з українським (<span class="hr">jèzik, profésor, Zágreb</span>).</div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 2. NOUNS ============ -->
+<section class="g-section" id="nouns">
+  <h2>2. Іменники <span class="badge b1">Етап 1 · однина</span> <span class="badge b2">Етап 2 · множина</span></h2>
+  <p>7 відмінків — майже як в українській. Порядок у хорватських граматиках: N G D A V L I (в українській знахідний і орудний стоять в іншому місці — не плутайте рядки таблиць).</p>
+
+  <h3>Відмінки та питання</h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Відмінок (hr)</th><th>Український відповідник</th><th>Питання (hr)</th><th>Головні прийменники</th></tr></thead>
+    <tbody>
+      <tr><th class="case">N — nominativ</th><td>називний</td><td class="q hr">tko? što?</td><td>—</td></tr>
+      <tr><th class="case">G — genitiv</th><td>родовий</td><td class="q hr">koga? čega?</td><td><span class="hr">od, do, iz, bez, kod, blizu, oko, prije, poslije / nakon, zbog, umjesto, s/sa</span> (з поверхні: <span class="hr">sići s autobusa</span>)</td></tr>
+      <tr><th class="case">D — dativ</th><td>давальний</td><td class="q hr">komu? čemu?</td><td><span class="hr">k/ka</span> (до когось), <span class="hr">prema</span> (до, у напрямку; згідно з), <span class="hr">unatoč / usprkos</span> (попри)</td></tr>
+      <tr><th class="case">A — akuzativ</th><td>знахідний</td><td class="q hr">koga? što?</td><td><span class="hr">u, na</span> (куди?), <span class="hr">kroz, za, niz, uz, po</span> (<span class="hr">idem po kruh</span> — іду по хліб), <span class="hr">nad, pod, pred, među</span> (куди?)</td></tr>
+      <tr><th class="case">V — vokativ</th><td>кличний</td><td class="q">—</td><td>—</td></tr>
+      <tr><th class="case">L — lokativ</th><td>місцевий</td><td class="q hr">(o) komu? (o) čemu? gdje?</td><td><span class="hr">u, na</span> (де?), <span class="hr">o</span> (про), <span class="hr">po</span> (по), <span class="hr">pri</span> (при)</td></tr>
+      <tr><th class="case">I — instrumental</th><td>орудний</td><td class="q hr">(s) kim? čime?</td><td><span class="hr">s/sa</span> (з кимось), <span class="hr">nad, pod, pred, za, među</span> (де?)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Чоловічий рід <span class="badge b1">Етап 1</span> <span class="badge b2">Етап 2</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead>
+      <tr><th rowspan="2"></th><th colspan="2">істота: <span class="hr">student</span></th><th colspan="2">неістота: <span class="hr">grad</span></th><th colspan="2">м'яка основа: <span class="hr">prijatelj</span></th></tr>
+      <tr><th>однина</th><th>множина</th><th>однина</th><th>множина</th><th>однина</th><th>множина</th></tr>
+    </thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">student</td><td class="hr">student<b class="e">i</b></td><td class="hr">grad</td><td class="hr">grad<b class="e">ovi</b></td><td class="hr">prijatelj</td><td class="hr">prijatelj<b class="e">i</b></td></tr>
+      <tr><th>G</th><td class="hr">student<b class="e">a</b></td><td class="hr">student<b class="e">ata</b></td><td class="hr">grad<b class="e">a</b></td><td class="hr">grad<b class="e">ova</b></td><td class="hr">prijatelj<b class="e">a</b></td><td class="hr">prijatelj<b class="e">a</b></td></tr>
+      <tr><th>D</th><td class="hr">student<b class="e">u</b></td><td class="hr">student<b class="e">ima</b></td><td class="hr">grad<b class="e">u</b></td><td class="hr">grad<b class="e">ovima</b></td><td class="hr">prijatelj<b class="e">u</b></td><td class="hr">prijatelj<b class="e">ima</b></td></tr>
+      <tr><th>A</th><td class="hr">student<b class="e">a</b> <small>(= G)</small></td><td class="hr">student<b class="e">e</b></td><td class="hr">grad <small>(= N)</small></td><td class="hr">grad<b class="e">ove</b></td><td class="hr">prijatelj<b class="e">a</b></td><td class="hr">prijatelj<b class="e">e</b></td></tr>
+      <tr><th>V</th><td class="hr">student<b class="e">e</b></td><td class="hr">student<b class="e">i</b></td><td class="hr">grad<b class="e">e</b></td><td class="hr">grad<b class="e">ovi</b></td><td class="hr">prijatelj<b class="e">u</b></td><td class="hr">prijatelj<b class="e">i</b></td></tr>
+      <tr><th>L</th><td class="hr">student<b class="e">u</b></td><td class="hr">student<b class="e">ima</b></td><td class="hr">grad<b class="e">u</b></td><td class="hr">grad<b class="e">ovima</b></td><td class="hr">prijatelj<b class="e">u</b></td><td class="hr">prijatelj<b class="e">ima</b></td></tr>
+      <tr><th>I</th><td class="hr">student<b class="e">om</b></td><td class="hr">student<b class="e">ima</b></td><td class="hr">grad<b class="e">om</b></td><td class="hr">grad<b class="e">ovima</b></td><td class="hr">prijatelj<b class="e">em</b></td><td class="hr">prijatelj<b class="e">ima</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul>
+    <li><b>Знахідний однини:</b> істота = родовий (<span class="hr">vidim studenta</span>), неістота = називний (<span class="hr">vidim grad</span>). У множині знахідний завжди на <b class="e">-e</b> — <span class="hr">vidim studente</span> (укр. «бачу студентів» — тут інакше!).</li>
+    <li><b>Орудний -om / -em:</b> після м'яких приголосних (<span class="hr">c, č, ć, dž, đ, j, lj, nj, š, ž</span>) — <b class="e">-em</b>: <span class="hr">prijateljem, mužem, stricem, nožem</span>. Інакше <b class="e">-om</b>: <span class="hr">studentom, gradom</span>.</li>
+    <li><b>Кличний:</b> <span class="hr">-e</span> (<span class="hr">studente! gospodine!</span>), після м'яких — <span class="hr">-u</span> (<span class="hr">prijatelju! mužu!</span>); <span class="hr">k, g, h → č, ž, š</span>: <span class="hr">junak → junače, Bog → Bože, duh → duše</span>; <span class="hr">-ac → -če</span>: <span class="hr">stranac → stranče</span>.</li>
+    <li><b>Множина з -ov- / -ev-:</b> більшість односкладових: <span class="hr">grad → gradovi, sin → sinovi, muž → muževi, broj → brojevi</span> (<span class="hr">-ev-</span> після м'яких). Винятки: <span class="hr">čovjek → ljudi, gost → gosti, zub → zubi, konj → konji</span>.</li>
+    <li><b>Сибіляризація у множині:</b> <span class="hr">k → c, g → z, h → s</span> перед <span class="hr">-i</span>: <span class="hr">vojnik → vojni<b class="e">ci</b>, vojni<b class="e">cima</b>; bubreg → bubre<b class="e">zi</b>; trbuh → trbu<b class="e">si</b></span>. Але знахідний: <span class="hr">vojnike</span> (перед <span class="hr">-e</span> — без змін).</li>
+    <li><b>Рухоме a:</b> <span class="hr">stranac → stranca, strancu</span>, род. мн. <span class="hr">stranaca</span>; <span class="hr">vrabac → vrapca</span>; <span class="hr">petak → petka</span>.</li>
+    <li>Деякі іменники ч. р. на <span class="hr">-o / -e</span>: <span class="hr">auto, radio, Marko</span> — відмінюються як ч. р.: <span class="hr">auta, autu, autom</span>.</li>
+  </ul>
+
+  <h3>Середній рід <span class="badge b1">Етап 1</span> <span class="badge b2">Етап 2</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead>
+      <tr><th rowspan="2"></th><th colspan="2">на -o: <span class="hr">selo</span></th><th colspan="2">на -e: <span class="hr">more</span></th></tr>
+      <tr><th>однина</th><th>множина</th><th>однина</th><th>множина</th></tr>
+    </thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">sel<b class="e">o</b></td><td class="hr">sel<b class="e">a</b></td><td class="hr">mor<b class="e">e</b></td><td class="hr">mor<b class="e">a</b></td></tr>
+      <tr><th>G</th><td class="hr">sel<b class="e">a</b></td><td class="hr">sel<b class="e">a</b></td><td class="hr">mor<b class="e">a</b></td><td class="hr">mor<b class="e">a</b></td></tr>
+      <tr><th>D</th><td class="hr">sel<b class="e">u</b></td><td class="hr">sel<b class="e">ima</b></td><td class="hr">mor<b class="e">u</b></td><td class="hr">mor<b class="e">ima</b></td></tr>
+      <tr><th>A</th><td class="hr">sel<b class="e">o</b></td><td class="hr">sel<b class="e">a</b></td><td class="hr">mor<b class="e">e</b></td><td class="hr">mor<b class="e">a</b></td></tr>
+      <tr><th>V</th><td class="hr">sel<b class="e">o</b></td><td class="hr">sel<b class="e">a</b></td><td class="hr">mor<b class="e">e</b></td><td class="hr">mor<b class="e">a</b></td></tr>
+      <tr><th>L</th><td class="hr">sel<b class="e">u</b></td><td class="hr">sel<b class="e">ima</b></td><td class="hr">mor<b class="e">u</b></td><td class="hr">mor<b class="e">ima</b></td></tr>
+      <tr><th>I</th><td class="hr">sel<b class="e">om</b></td><td class="hr">sel<b class="e">ima</b></td><td class="hr">mor<b class="e">em</b></td><td class="hr">mor<b class="e">ima</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Середній рід = чоловічий неістота, крім N/A/V. Розширення основи: <span class="hr">ime → imena</span> (ім'я), <span class="hr">vrijeme → vremena</span>, <span class="hr">dijete → djeteta</span> (але мн. — <span class="hr">djeca</span>, збірне ж. р.: <span class="hr">djeca su došla</span>).</p>
+
+  <h3>Жіночий рід <span class="badge b1">Етап 1</span> <span class="badge b2">Етап 2</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead>
+      <tr><th rowspan="2"></th><th colspan="2">на -a: <span class="hr">žena</span></th><th colspan="2">на приголосний: <span class="hr">stvar</span></th></tr>
+      <tr><th>однина</th><th>множина</th><th>однина</th><th>множина</th></tr>
+    </thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">žen<b class="e">a</b></td><td class="hr">žen<b class="e">e</b></td><td class="hr">stvar</td><td class="hr">stvar<b class="e">i</b></td></tr>
+      <tr><th>G</th><td class="hr">žen<b class="e">e</b></td><td class="hr">žen<b class="e">a</b></td><td class="hr">stvar<b class="e">i</b></td><td class="hr">stvar<b class="e">i</b></td></tr>
+      <tr><th>D</th><td class="hr">žen<b class="e">i</b></td><td class="hr">žen<b class="e">ama</b></td><td class="hr">stvar<b class="e">i</b></td><td class="hr">stvar<b class="e">ima</b></td></tr>
+      <tr><th>A</th><td class="hr">žen<b class="e">u</b></td><td class="hr">žen<b class="e">e</b></td><td class="hr">stvar</td><td class="hr">stvar<b class="e">i</b></td></tr>
+      <tr><th>V</th><td class="hr">žen<b class="e">o</b></td><td class="hr">žen<b class="e">e</b></td><td class="hr">stvar<b class="e">i</b></td><td class="hr">stvar<b class="e">i</b></td></tr>
+      <tr><th>L</th><td class="hr">žen<b class="e">i</b></td><td class="hr">žen<b class="e">ama</b></td><td class="hr">stvar<b class="e">i</b></td><td class="hr">stvar<b class="e">ima</b></td></tr>
+      <tr><th>I</th><td class="hr">žen<b class="e">om</b></td><td class="hr">žen<b class="e">ama</b></td><td class="hr">stvar<b class="e">i</b></td><td class="hr">stvar<b class="e">ima</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul>
+    <li><b>Д./М. однини на -ci, -zi, -si:</b> <span class="hr">ruka → ru<b class="e">ci</b>, noga → no<b class="e">zi</b>, knjiga → knji<b class="e">zi</b>, majka → maj<b class="e">ci</b></span> (як укр. «рука → руці, нога → нозі»!). Винятки — імена й пестливі: <span class="hr">Ivanka → Ivanki, baka → baki</span>.</li>
+    <li><b>Орудний ж. р. на приголосний:</b> зазвичай <span class="hr">-i</span> (<span class="hr">stvari, noći</span>); з деякими словами <span class="hr">-ju</span> з чергуванням: <span class="hr">radost → radošću, sol → solju, krv → krvlju</span>. <span class="hr">noću</span> — прислівник «уночі».</li>
+    <li><b>Родовий множини:</b> основне закінчення <b class="e">-a</b>, часто зі вставним <span class="hr">a</span>: <span class="hr">sestra → sestara, pjesma → pjesama, djevojka → djevojaka</span>. Закінчення <b class="e">-i</b>: <span class="hr">majka → majki, stvar → stvari, mjesec → mjeseci, ljudi</span>; закінчення <b class="e">-u</b>: <span class="hr">ruka → ruku, noga → nogu</span>; закінчення <b class="e">-iju</b>: <span class="hr">prst → prstiju, gost → gostiju, kost → kostiju, oči → očiju, uši → ušiju</span>.</li>
+  </ul>
+
+  <div class="tip"><b>u / na + знахідний чи місцевий?</b> Як в українській: <b>куди?</b> → знахідний, <b>де?</b> → місцевий, <b>звідки?</b> → родовий.
+    <div class="scroll"><table class="ref">
+      <thead><tr><th><span class="hr">kamo?</span> куди? (A)</th><th><span class="hr">gdje?</span> де? (L)</th><th><span class="hr">odakle?</span> звідки? (G)</th></tr></thead>
+      <tbody>
+        <tr><td class="hr">Idem u škol<b class="e">u</b>.</td><td class="hr">Ja sam u škol<b class="e">i</b>.</td><td class="hr">Dolazim iz škol<b class="e">e</b>.</td></tr>
+        <tr><td class="hr">Idemo na mor<b class="e">e</b>.</td><td class="hr">Na mor<b class="e">u</b> smo.</td><td class="hr">Vraćamo se s mor<b class="e">a</b>.</td></tr>
+        <tr><td class="hr">Idem k liječnik<b class="e">u</b> (D).</td><td class="hr">Kod liječnik<b class="e">a</b> sam (G).</td><td class="hr">Dolazim od liječnik<b class="e">a</b>.</td></tr>
+      </tbody>
+    </table></div>
+    <span class="hr">u</span> ↔ <span class="hr">iz</span>, <span class="hr">na</span> ↔ <span class="hr">s/sa</span>, до людини: <span class="hr">k</span> ↔ <span class="hr">kod</span> ↔ <span class="hr">od</span>. <span class="hr">na</span> вживається з подіями й відкритими місцями: <span class="hr">na poslu, na koncertu, na kolodvoru, na trgu</span>.
+  </div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 3. ADJECTIVES ============ -->
+<section class="g-section" id="adjectives">
+  <h2>3. Прикметники <span class="badge b1">Етап 1 · відмінювання</span> <span class="badge b2">Етап 2 · ступені порівняння</span></h2>
+
+  <div class="tip"><b>Означений і неозначений вид (ч. р.).</b> Неозначений (короткий) — коли предмет новий, невідомий, переважно в іменній частині присудка: <span class="hr">Grad je nov.</span> Означений (довгий, на <span class="hr">-i</span>) — «той самий, відомий»: <span class="hr">Novi grad je lijep.</span> Відповідає на <span class="hr">kakav?</span> (який?) vs <span class="hr">koji?</span> (котрий?). На практиці в непрямих відмінках майже завжди вживають довгу форму. Прикметники на <span class="hr">-ski, -ški, -nji</span> мають лише довгу форму: <span class="hr">hrvatski, ukrajinski, jučerašnji</span>.</div>
+
+  <h3>Відмінювання: <span class="hr">novi / nova / novo</span> (означений вид)</h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th>ч. р. одн.</th><th>с. р. одн.</th><th>ж. р. одн.</th><th>ч. р. мн.</th><th>с. р. мн.</th><th>ж. р. мн.</th></tr></thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">nov<b class="e">i</b></td><td class="hr">nov<b class="e">o</b></td><td class="hr">nov<b class="e">a</b></td><td class="hr">nov<b class="e">i</b></td><td class="hr">nov<b class="e">a</b></td><td class="hr">nov<b class="e">e</b></td></tr>
+      <tr><th>G</th><td class="hr">nov<b class="e">og(a)</b></td><td class="hr">nov<b class="e">og(a)</b></td><td class="hr">nov<b class="e">e</b></td><td colspan="3" class="hr" style="text-align:center">nov<b class="e">ih</b></td></tr>
+      <tr><th>D</th><td class="hr">nov<b class="e">om(u/e)</b></td><td class="hr">nov<b class="e">om(u/e)</b></td><td class="hr">nov<b class="e">oj</b></td><td colspan="3" class="hr" style="text-align:center">nov<b class="e">im(a)</b></td></tr>
+      <tr><th>A</th><td class="hr">nov<b class="e">i</b> / nov<b class="e">og(a)</b> <small>(істота)</small></td><td class="hr">nov<b class="e">o</b></td><td class="hr">nov<b class="e">u</b></td><td class="hr">nov<b class="e">e</b></td><td class="hr">nov<b class="e">a</b></td><td class="hr">nov<b class="e">e</b></td></tr>
+      <tr><th>V</th><td class="hr">nov<b class="e">i</b></td><td class="hr">nov<b class="e">o</b></td><td class="hr">nov<b class="e">a</b></td><td class="hr">nov<b class="e">i</b></td><td class="hr">nov<b class="e">a</b></td><td class="hr">nov<b class="e">e</b></td></tr>
+      <tr><th>L</th><td class="hr">nov<b class="e">om(e)</b></td><td class="hr">nov<b class="e">om(e)</b></td><td class="hr">nov<b class="e">oj</b></td><td colspan="3" class="hr" style="text-align:center">nov<b class="e">im(a)</b></td></tr>
+      <tr><th>I</th><td class="hr">nov<b class="e">im</b></td><td class="hr">nov<b class="e">im</b></td><td class="hr">nov<b class="e">om</b></td><td colspan="3" class="hr" style="text-align:center">nov<b class="e">im(a)</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul>
+    <li>Неозначений вид ч. р.: N <span class="hr">nov</span>, G <span class="hr">nova</span>, D/L <span class="hr">novu</span>, A <span class="hr">nov / nova</span> — трапляється у сталих виразах і в літературі.</li>
+    <li>М'яка основа (<span class="hr">č, ć, đ, j, lj, nj, š, ž</span>): <span class="hr">-og → <b class="e">-eg</b>, -om → <b class="e">-em</b></span>: <span class="hr">vrući → vrućeg, vrućem; naš → našeg, našem</span>.</li>
+    <li>Рухоме a: <span class="hr">dobar → dobra, dobri; kratak → kratka; malen → malena</span>.</li>
+  </ul>
+
+  <h3>Ступені порівняння <span class="badge b2">Етап 2</span></h3>
+  <p>Найвищий ступінь = <span class="hr"><b class="e">naj</b> + вищий</span>: <span class="hr">najnoviji, najbolji</span> (як укр. «най-»). Порівняння: <span class="hr">od</span> + родовий або <span class="hr">nego</span> + називний: <span class="hr">Ivan je stariji od Marka. / Ivan je stariji nego Marko.</span></p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Тип</th><th>Звичайний</th><th>Вищий</th><th>Найвищий</th><th>Українською</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="4"><b class="e">-iji</b> (більшість багатоскладових)</td><td class="hr">nov</td><td class="hr">nov<b class="e">iji</b></td><td class="hr">najnoviji</td><td>новий</td></tr>
+      <tr><td class="hr">star</td><td class="hr">star<b class="e">iji</b></td><td class="hr">najstariji</td><td>старий</td></tr>
+      <tr><td class="hr">jeftin</td><td class="hr">jeftin<b class="e">iji</b></td><td class="hr">najjeftiniji</td><td>дешевий</td></tr>
+      <tr><td class="hr">pametan</td><td class="hr">pametn<b class="e">iji</b></td><td class="hr">najpametniji</td><td>розумний</td></tr>
+      <tr><td rowspan="9"><b class="e">-ji</b> з чергуванням (йотація)</td><td class="hr">brz</td><td class="hr">br<b class="e">ži</b></td><td class="hr">najbrži</td><td>швидкий</td></tr>
+      <tr><td class="hr">jak</td><td class="hr">ja<b class="e">či</b></td><td class="hr">najjači</td><td>сильний</td></tr>
+      <tr><td class="hr">mlad</td><td class="hr">mla<b class="e">đi</b></td><td class="hr">najmlađi</td><td>молодий</td></tr>
+      <tr><td class="hr">skup</td><td class="hr">skup<b class="e">lji</b></td><td class="hr">najskuplji</td><td>дорогий</td></tr>
+      <tr><td class="hr">tih</td><td class="hr">ti<b class="e">ši</b></td><td class="hr">najtiši</td><td>тихий</td></tr>
+      <tr><td class="hr">kratak</td><td class="hr">kra<b class="e">ći</b></td><td class="hr">najkraći</td><td>короткий</td></tr>
+      <tr><td class="hr">dug</td><td class="hr">du<b class="e">ži</b></td><td class="hr">najduži</td><td>довгий</td></tr>
+      <tr><td class="hr">visok / nizak</td><td class="hr">vi<b class="e">ši</b> / ni<b class="e">ži</b></td><td class="hr">najviši / najniži</td><td>високий / низький</td></tr>
+      <tr><td class="hr">blizak / dalek</td><td class="hr">bli<b class="e">ži</b> / da<b class="e">lji</b></td><td class="hr">najbliži / najdalji</td><td>близький / далекий</td></tr>
+      <tr><td rowspan="3"><b class="e">-ši</b></td><td class="hr">lijep</td><td class="hr">lje<b class="e">pši</b></td><td class="hr">najljepši</td><td>гарний</td></tr>
+      <tr><td class="hr">lak</td><td class="hr">lak<b class="e">ši</b></td><td class="hr">najlakši</td><td>легкий</td></tr>
+      <tr><td class="hr">mek</td><td class="hr">mek<b class="e">ši</b></td><td class="hr">najmekši</td><td>м'який</td></tr>
+      <tr><td rowspan="4"><b>неправильні</b></td><td class="hr">dobar</td><td class="hr"><b class="e">bolji</b></td><td class="hr">najbolji</td><td>добрий — кращий</td></tr>
+      <tr><td class="hr">loš / zao</td><td class="hr"><b class="e">gori</b></td><td class="hr">najgori</td><td>поганий — гірший</td></tr>
+      <tr><td class="hr">velik</td><td class="hr"><b class="e">veći</b></td><td class="hr">najveći</td><td>великий — більший</td></tr>
+      <tr><td class="hr">malen / mali</td><td class="hr"><b class="e">manji</b></td><td class="hr">najmanji</td><td>малий — менший</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Прислівники: <span class="hr">dobro → bolje → najbolje; loše → gore; mnogo → više; malo → manje; brzo → brže; lijepo → ljepše</span>.</p>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 4. PRONOUNS ============ -->
+<section class="g-section" id="pronouns">
+  <h2>4. Займенники <span class="badge b1">Етап 1 · присвійні</span> <span class="badge b2">Етап 2 · особові, koji</span></h2>
+
+  <h3>Особові: повні / короткі (енклітичні) форми <span class="badge b2">Етап 2</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th>ja</th><th>ti</th><th>on / ono</th><th>ona</th><th>mi</th><th>vi</th><th>oni / one / ona</th></tr></thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">ja</td><td class="hr">ti</td><td class="hr">on / ono</td><td class="hr">ona</td><td class="hr">mi</td><td class="hr">vi</td><td class="hr">oni / one / ona</td></tr>
+      <tr><th>G</th><td class="hr">mene / <b class="e">me</b></td><td class="hr">tebe / <b class="e">te</b></td><td class="hr">njega / <b class="e">ga</b></td><td class="hr">nje / <b class="e">je</b></td><td class="hr">nas / <b class="e">nas</b></td><td class="hr">vas / <b class="e">vas</b></td><td class="hr">njih / <b class="e">ih</b></td></tr>
+      <tr><th>D</th><td class="hr">meni / <b class="e">mi</b></td><td class="hr">tebi / <b class="e">ti</b></td><td class="hr">njemu / <b class="e">mu</b></td><td class="hr">njoj / <b class="e">joj</b></td><td class="hr">nama / <b class="e">nam</b></td><td class="hr">vama / <b class="e">vam</b></td><td class="hr">njima / <b class="e">im</b></td></tr>
+      <tr><th>A</th><td class="hr">mene / <b class="e">me</b></td><td class="hr">tebe / <b class="e">te</b></td><td class="hr">njega / <b class="e">ga</b></td><td class="hr">nju / <b class="e">ju, je</b></td><td class="hr">nas / <b class="e">nas</b></td><td class="hr">vas / <b class="e">vas</b></td><td class="hr">njih / <b class="e">ih</b></td></tr>
+      <tr><th>L</th><td class="hr">meni</td><td class="hr">tebi</td><td class="hr">njemu</td><td class="hr">njoj</td><td class="hr">nama</td><td class="hr">vama</td><td class="hr">njima</td></tr>
+      <tr><th>I</th><td class="hr">mnom(e)</td><td class="hr">tobom</td><td class="hr">njim(e)</td><td class="hr">njom(e)</td><td class="hr">nama</td><td class="hr">vama</td><td class="hr">njima</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul>
+    <li><b>Коротка форма</b> — за замовчуванням: <span class="hr">Vidim ga.</span> (Бачу його.) <b>Повна</b> — для наголосу/протиставлення, на початку речення і <b>після прийменників</b>: <span class="hr">Njega vidim, a nju ne. · za mene · s njim · kod tebe · o njoj</span>.</li>
+    <li>Ж. р. знахідний: <span class="hr">ju</span> і <span class="hr">je</span> — обидві правильні; <span class="hr">ju</span> вживають, щоб уникнути збігу з <span class="hr">je</span> «є»: <span class="hr">Vidio ju je.</span></li>
+    <li>Підметовий займенник зазвичай опускають (як в укр.): <span class="hr">Idem kući.</span> — Іду додому.</li>
+  </ul>
+
+  <h3>Зворотний <span class="hr">sebe / se</span> <span class="badge b2">Етап 2</span></h3>
+  <table class="ref">
+    <thead><tr><th>G</th><th>D</th><th>A</th><th>L</th><th>I</th></tr></thead>
+    <tbody><tr><td class="hr">sebe</td><td class="hr">sebi / <b class="e">si</b></td><td class="hr">sebe / <b class="e">se</b></td><td class="hr">sebi</td><td class="hr">sobom</td></tr></tbody>
+  </table>
+  <p>Як укр. «себе / -ся»: <span class="hr">Umivam se.</span> (Умиваюся.) · <span class="hr">Kupio sam si knjigu.</span> (Купив собі книжку.) · <span class="hr">Nosi to sa sobom.</span> (Бери це з собою.) · <span class="hr">Misli samo na sebe.</span></p>
+
+  <h3>Присвійні <span class="badge b1">Етап 1</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Hr</th><th>Укр</th><th>ж. р.</th><th>с. р.</th><th>Приклад</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">moj</td><td>мій</td><td class="hr">moja</td><td class="hr">moje</td><td class="hr">moj brat, moja sestra</td></tr>
+      <tr><td class="hr">tvoj</td><td>твій</td><td class="hr">tvoja</td><td class="hr">tvoje</td><td class="hr">tvoje ime</td></tr>
+      <tr><td class="hr">njegov</td><td>його</td><td class="hr">njegova</td><td class="hr">njegovo</td><td class="hr">njegova kuća</td></tr>
+      <tr><td class="hr">njezin / njen</td><td>її</td><td class="hr">njezina / njena</td><td class="hr">njezino / njeno</td><td class="hr">njezin muž</td></tr>
+      <tr><td class="hr">naš</td><td>наш</td><td class="hr">naša</td><td class="hr">naše</td><td class="hr">naš grad</td></tr>
+      <tr><td class="hr">vaš</td><td>ваш</td><td class="hr">vaša</td><td class="hr">vaše</td><td class="hr">Vaša adresa</td></tr>
+      <tr><td class="hr">njihov</td><td>їхній</td><td class="hr">njihova</td><td class="hr">njihovo</td><td class="hr">njihova djeca</td></tr>
+      <tr><td class="hr">svoj</td><td>свій</td><td class="hr">svoja</td><td class="hr">svoje</td><td class="hr">Volim svoj posao.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="warn"><b>Відмінок від української:</b> <span class="hr">njegov, njezin, njihov</span> — це прикметники, вони <b>узгоджуються з іменником</b>: <span class="hr">Vidim njegov<b class="e">u</b> sestr<b class="e">u</b>. · s njihov<b class="e">om</b> djec<b class="e">om</b></span> (укр. «його/її/їхній» — «бачу його сестру»: «його» не змінюється). <span class="hr">njezin</span> — книжна хорватська норма, <span class="hr">njen</span> — розмовне, теж допустиме.</div>
+  <div class="tip"><b><span class="hr">svoj</span></b> працює як укр. «свій»: відсилає до підмета у будь-якій особі. <span class="hr">Ivan voli svoju ženu</span> (свою) ≠ <span class="hr">Ivan voli njegovu ženu</span> (чужого чоловіка дружину!).</div>
+
+  <p>Відмінювання <span class="hr">moj</span> (так само <span class="hr">tvoj, svoj</span>; <span class="hr">naš, vaš</span> — з <span class="hr">-eg, -em</span>):</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th>ч. р.</th><th>с. р.</th><th>ж. р.</th><th>мн. (ч. / ж. / с.)</th></tr></thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">moj</td><td class="hr">moje</td><td class="hr">moja</td><td class="hr">moji / moje / moja</td></tr>
+      <tr><th>G</th><td class="hr">mojeg(a), mog(a)</td><td class="hr">mojeg(a), mog(a)</td><td class="hr">moje</td><td class="hr">mojih</td></tr>
+      <tr><th>D</th><td class="hr">mojem(u), mom(u/e)</td><td class="hr">mojem(u), mom(u/e)</td><td class="hr">mojoj</td><td class="hr">mojim(a)</td></tr>
+      <tr><th>A</th><td class="hr">moj / mojeg(a), mog(a) <small>(істота)</small></td><td class="hr">moje</td><td class="hr">moju</td><td class="hr">moje / moje / moja</td></tr>
+      <tr><th>L</th><td class="hr">mojem, mom(e)</td><td class="hr">mojem, mom(e)</td><td class="hr">mojoj</td><td class="hr">mojim(a)</td></tr>
+      <tr><th>I</th><td class="hr">mojim</td><td class="hr">mojim</td><td class="hr">mojom</td><td class="hr">mojim(a)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Відносний <span class="hr">koji</span> <span class="badge b2">Етап 2</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th>ч. р.</th><th>с. р.</th><th>ж. р.</th><th>мн.</th></tr></thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">koji</td><td class="hr">koje</td><td class="hr">koja</td><td class="hr">koji / koje / koja</td></tr>
+      <tr><th>G</th><td class="hr">kojeg(a), koga</td><td class="hr">kojeg(a)</td><td class="hr">koje</td><td class="hr">kojih</td></tr>
+      <tr><th>D</th><td class="hr">kojem(u), kome</td><td class="hr">kojem(u)</td><td class="hr">kojoj</td><td class="hr">kojima</td></tr>
+      <tr><th>A</th><td class="hr">koji / kojeg(a) <small>(істота)</small></td><td class="hr">koje</td><td class="hr">koju</td><td class="hr">koje / koje / koja</td></tr>
+      <tr><th>L</th><td class="hr">kojem, kome</td><td class="hr">kojem</td><td class="hr">kojoj</td><td class="hr">kojima</td></tr>
+      <tr><th>I</th><td class="hr">kojim</td><td class="hr">kojim</td><td class="hr">kojom</td><td class="hr">kojima</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul>
+    <li><span class="hr">Čovjek <b class="e">koji</b> tamo stoji moj je otac.</span> — Чоловік, який там стоїть, — мій батько.</li>
+    <li><span class="hr">Žena <b class="e">koju</b> sam jučer upoznao radi u banci.</span> — Жінка, з якою я вчора познайомився, працює в банку.</li>
+    <li><span class="hr">Grad u <b class="e">kojem</b> živim nije velik.</span> — Місто, в якому я живу, невелике.</li>
+    <li><span class="hr">Prijatelj s <b class="e">kojim</b> radim zove se Ante.</span> — Друг, з яким я працюю, — Анте.</li>
+    <li><span class="hr">čiji, čija, čije</span> — чий: <span class="hr">Susjed čiji je pas glasan…</span>; <span class="hr">što</span> після <span class="hr">sve, ono</span>: <span class="hr">To je sve što znam.</span></li>
+  </ul>
+
+  <h3>Вказівні <span class="hr">ovaj / taj / onaj</span> <span class="badge b1">Етап 1</span></h3>
+  <p>Три ступені віддаленості: <span class="hr">ovaj</span> — цей (біля мене), <span class="hr">taj</span> — цей/той (біля тебе або вже згаданий), <span class="hr">onaj</span> — он той (далеко від обох).</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th>ч. р.</th><th>с. р.</th><th>ж. р.</th><th>мн. ч. / ж. / с.</th></tr></thead>
+    <tbody>
+      <tr><th>N</th><td class="hr">ovaj · taj · onaj</td><td class="hr">ovo · to · ono</td><td class="hr">ova · ta · ona</td><td class="hr">ovi / ove / ova</td></tr>
+      <tr><th>G</th><td class="hr">ovog(a) · tog(a) · onog(a)</td><td class="hr">= ч. р.</td><td class="hr">ove · te · one</td><td class="hr">ovih · tih · onih</td></tr>
+      <tr><th>D / L</th><td class="hr">ovom(e/u) · tom(e/u) · onom(e/u)</td><td class="hr">= ч. р.</td><td class="hr">ovoj · toj · onoj</td><td class="hr">ovim(a) · tim(a) · onim(a)</td></tr>
+      <tr><th>A</th><td class="hr">ovaj / ovog(a) <small>(істота)</small></td><td class="hr">ovo · to · ono</td><td class="hr">ovu · tu · onu</td><td class="hr">ove / ove / ova</td></tr>
+      <tr><th>I</th><td class="hr">ovim · tim · onim</td><td class="hr">= ч. р.</td><td class="hr">ovom · tom · onom</td><td class="hr">ovim(a) · tim(a) · onim(a)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 5. CLITICS ============ -->
+<section class="g-section" id="clitics">
+  <h2>5. Енклітики (клітики) <span class="badge b1">Етап 1 · базове</span> <span class="badge b2">Етап 2 · повний порядок</span></h2>
+  <p>Енклітики — короткі ненаголошені слова: <span class="hr">li</span>, допоміжні дієслова (<span class="hr">sam, si, je, smo, ste, su; ću, ćeš…; bih, bi…</span>), короткі займенники (<span class="hr">mi, ti, mu, me, te, ga…</span>) і <span class="hr">se</span>. Вони <b>не можуть стояти першими</b> і збираються в «кластер» на <b>другій позиції</b> — після першого наголошеного слова або першої словосполуки.</p>
+
+  <div class="card">
+    <strong>Схема: друга позиція в реченні</strong>
+    <div class="cl-row" role="img" aria-label="Порядок енклітик: перше слово, li, допоміжне, давальний, знахідний, родовий, se, je, решта речення">
+      <div class="cl-box cl-first"><small>позиція 1</small><b>1-е слово / фраза</b></div>
+      <span class="cl-arrow">→</span>
+      <div class="cl-box cl-li"><span class="cl-num">1</span><b class="hr">li</b><small>питання</small></div>
+      <div class="cl-box cl-aux"><span class="cl-num">2</span><b class="hr">sam si smo ste su · ću ćeš · bih</b><small>допоміжне (крім je)</small></div>
+      <div class="cl-box cl-dat"><span class="cl-num">3</span><b class="hr">mi ti mu joj nam vam im si</b><small>давальний</small></div>
+      <div class="cl-box cl-acc"><span class="cl-num">4</span><b class="hr">me te ga je/ju nas vas ih</b><small>знахідний</small></div>
+      <div class="cl-box cl-gen"><span class="cl-num">5</span><b class="hr">me te ga je nas vas ih</b><small>родовий</small></div>
+      <div class="cl-box cl-se"><span class="cl-num">6</span><b class="hr">se</b><small>зворотне</small></div>
+      <div class="cl-box cl-je"><span class="cl-num">7</span><b class="hr">je</b><small>«є» — завжди останнє</small></div>
+      <span class="cl-arrow">→</span>
+      <div class="cl-box cl-rest"><small>далі</small><b>решта речення</b></div>
+    </div>
+    <p style="margin:0">Мнемоніка: <b>Лі — Допоміжне — Дав — Знах — Род — Се — Є</b>. Знахідний і родовий у одному кластері трапляються рідко, тож на практиці важливо: <b>дієслово → давальний → знахідний → se → je</b>.</p>
+  </div>
+
+  <h3>Приклади</h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Хорватською</th><th>Кластер</th><th>Українською</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">Dao <span class="chip cl-aux">sam</span> <span class="chip cl-dat">mu</span> <span class="chip cl-acc">ga</span>.</td><td>aux · D · A</td><td>Я дав йому це (його).</td></tr>
+      <tr><td class="hr">Ivan <span class="chip cl-dat">mu</span> <span class="chip cl-acc">ga</span> <span class="chip cl-je">je</span> dao.</td><td>D · A · je</td><td>Іван йому це дав.</td></tr>
+      <tr><td class="hr">Hoćeš <span class="chip cl-li">li</span> <span class="chip cl-dat">mi</span> <span class="chip cl-acc">ga</span> dati?</td><td>li · D · A</td><td>Даси мені його?</td></tr>
+      <tr><td class="hr">Sutra <span class="chip cl-aux">ću</span> <span class="chip cl-dat">vam</span> <span class="chip cl-acc">ga</span> pokazati.</td><td>aux · D · A</td><td>Завтра я вам його покажу.</td></tr>
+      <tr><td class="hr">Sjećaš <span class="chip cl-li">li</span> <span class="chip cl-gen">ga</span> <span class="chip cl-se">se</span>?</td><td>li · G · se</td><td>Ти його пам'ятаєш?</td></tr>
+      <tr><td class="hr">Bojim <span class="chip cl-gen">ga</span> <span class="chip cl-se">se</span>.</td><td>G · se</td><td>Я його боюся.</td></tr>
+      <tr><td class="hr">Kupio <span class="chip cl-dat">si</span> <span class="chip cl-acc">ga</span> <span class="chip cl-je">je</span>.</td><td>D (si = собі) · A · je</td><td>Він купив його собі.</td></tr>
+      <tr><td class="hr">Upoznali <span class="chip cl-aux">smo</span> <span class="chip cl-se">se</span> jučer.</td><td>aux · se</td><td>Ми познайомилися вчора.</td></tr>
+      <tr><td class="hr">Je <span class="chip cl-li">li</span> <span class="chip cl-dat">ti</span> <span class="chip cl-se">se</span> svidio film?</td><td>(je) li · D · se</td><td>Тобі сподобався фільм?</td></tr>
+      <tr><td class="hr">Moja <span class="chip cl-dat">mi</span> <span class="chip cl-acc">ga</span> <span class="chip cl-je">je</span> sestra dala. / Moja sestra <span class="chip cl-dat">mi</span> <span class="chip cl-acc">ga</span> <span class="chip cl-je">je</span> dala.</td><td>D · A · je</td><td>Моя сестра мені його дала (обидва варіанти правильні).</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="warn"><b>Типові помилки:</b> <span class="bad">Sam umoran.</span> → <span class="ok">Umoran sam.</span> / <span class="ok">Ja sam umoran.</span> · <span class="bad">Ga vidim.</span> → <span class="ok">Vidim ga.</span> · <span class="bad">Dao sam ga mu.</span> → <span class="ok">Dao sam mu ga.</span> · Після <span class="hr">se</span> допоміжне <span class="hr">je</span> у розмові часто опускають: <span class="hr">Smijao se.</span> (= <span class="hr">Smijao se je.</span>)</div>
+  <div class="tip">Підрядне речення — нова «перша позиція»: кластер одразу після сполучника: <span class="hr">Mislim da <span class="chip cl-dat">mu</span> <span class="chip cl-je">je</span> žao.</span> · <span class="hr">Žena koj<span class="e">u</span> <span class="chip cl-aux">sam</span> <span class="chip cl-dat">ti</span> spomenuo…</span> Звертання (вокатив) і вставні слова, відокремлені комою, у підрахунку позицій не враховуються.</div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 6. VERBS ============ -->
+<section class="g-section" id="verbs">
+  <h2>6. Дієслова <span class="badge b1">Етап 1</span> <span class="badge b2">Етап 2</span> <span class="badge b3">Етап 3</span></h2>
+
+  <h3>Теперішній час (prezent) <span class="badge b1">Етап 1</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th><span class="hr">čitati</span><br><small>читати (-a-)</small></th><th><span class="hr">govoriti</span><br><small>говорити (-i-)</small></th><th><span class="hr">pisati</span><br><small>писати (-e-, s→š)</small></th><th><span class="hr">piti</span><br><small>пити (-je-)</small></th><th><span class="hr">ići</span><br><small>іти</small></th><th><span class="hr">moći</span><br><small>могти</small></th><th><span class="hr">htjeti</span><br><small>хотіти (повна / коротка)</small></th><th><span class="hr">biti</span><br><small>бути (повна / коротка)</small></th></tr></thead>
+    <tbody>
+      <tr><th>ja</th><td class="hr">čita<b class="e">m</b></td><td class="hr">govori<b class="e">m</b></td><td class="hr">piše<b class="e">m</b></td><td class="hr">pije<b class="e">m</b></td><td class="hr">ide<b class="e">m</b></td><td class="hr">mog<b class="e">u</b></td><td class="hr">hoću / ću</td><td class="hr">jesam / sam</td></tr>
+      <tr><th>ti</th><td class="hr">čita<b class="e">š</b></td><td class="hr">govori<b class="e">š</b></td><td class="hr">piše<b class="e">š</b></td><td class="hr">pije<b class="e">š</b></td><td class="hr">ide<b class="e">š</b></td><td class="hr">može<b class="e">š</b></td><td class="hr">hoćeš / ćeš</td><td class="hr">jesi / si</td></tr>
+      <tr><th>on/ona/ono</th><td class="hr">čita</td><td class="hr">govori</td><td class="hr">piše</td><td class="hr">pije</td><td class="hr">ide</td><td class="hr">može</td><td class="hr">hoće / će</td><td class="hr">jest(e) / je</td></tr>
+      <tr><th>mi</th><td class="hr">čita<b class="e">mo</b></td><td class="hr">govori<b class="e">mo</b></td><td class="hr">piše<b class="e">mo</b></td><td class="hr">pije<b class="e">mo</b></td><td class="hr">ide<b class="e">mo</b></td><td class="hr">može<b class="e">mo</b></td><td class="hr">hoćemo / ćemo</td><td class="hr">jesmo / smo</td></tr>
+      <tr><th>vi</th><td class="hr">čita<b class="e">te</b></td><td class="hr">govori<b class="e">te</b></td><td class="hr">piše<b class="e">te</b></td><td class="hr">pije<b class="e">te</b></td><td class="hr">ide<b class="e">te</b></td><td class="hr">može<b class="e">te</b></td><td class="hr">hoćete / ćete</td><td class="hr">jeste / ste</td></tr>
+      <tr><th>oni/one/ona</th><td class="hr">čita<b class="e">ju</b></td><td class="hr">govor<b class="e">e</b></td><td class="hr">piš<b class="e">u</b></td><td class="hr">pij<b class="e">u</b></td><td class="hr">id<b class="e">u</b></td><td class="hr">mog<b class="e">u</b></td><td class="hr">hoće / će</td><td class="hr">jesu / su</td></tr>
+      <tr><th>заперечення</th><td class="hr">ne čitam</td><td class="hr">ne govorim</td><td class="hr">ne pišem</td><td class="hr">ne pijem</td><td class="hr">ne idem</td><td class="hr">ne mogu</td><td class="hr">neću, nećeš…</td><td class="hr">nisam, nisi, nije, nismo, niste, nisu</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul>
+    <li>1 ос. одн. майже завжди на <b class="e">-m</b>; винятки: <span class="hr">mogu, hoću/ću</span> (<span class="hr">-u</span>).</li>
+    <li>3 ос. мн.: <span class="hr">-a- → -aju</span>, <span class="hr">-i- → -e</span>, <span class="hr">-e- → -u / -ju</span>.</li>
+    <li>Чергування в основі (як укр. «писати — пишу»): <span class="hr">pisati → pišem, kazati → kažem, plakati → plačem</span>; <span class="hr">moći → možeš</span>; <span class="hr">razumjeti → razumijem</span>; <span class="hr">jesti → jedem</span>; <span class="hr">doći → dođem</span>.</li>
+    <li>Повні форми <span class="hr">jesam, hoću</span> — на початку питання, у короткій відповіді, для наголосу: <span class="hr">Jesi li umoran? — Jesam.</span> · <span class="hr">Hoćeš li kavu? — Hoću.</span></li>
+    <li>Модальні + <b>інфінітив</b>: <span class="hr">Moram ići. Mogu doći. Trebam kupiti kruh. Smijem li ući?</span> (<span class="hr">smjeti</span> — мати дозвіл).</li>
+  </ul>
+
+  <h3>Минулий час: perfekt <span class="badge b1">Етап 1</span></h3>
+  <p>Коротке <span class="hr">biti</span> (енклітика) + <b>l-дієприкметник</b> (рід і число узгоджуються з підметом — як укр. «читав / читала / читали»).</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Інфінітив</th><th>ч. р. одн.</th><th>ж. р. одн.</th><th>с. р. одн.</th><th>ч. р. мн.</th><th>ж. р. мн.</th><th>с. р. мн.</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">čitati</td><td class="hr">čita<b class="e">o</b></td><td class="hr">čita<b class="e">la</b></td><td class="hr">čita<b class="e">lo</b></td><td class="hr">čita<b class="e">li</b></td><td class="hr">čita<b class="e">le</b></td><td class="hr">čita<b class="e">la</b></td></tr>
+      <tr><td class="hr">govoriti</td><td class="hr">govori<b class="e">o</b></td><td class="hr">govori<b class="e">la</b></td><td class="hr">govori<b class="e">lo</b></td><td class="hr">govori<b class="e">li</b></td><td class="hr">govori<b class="e">le</b></td><td class="hr">govori<b class="e">la</b></td></tr>
+      <tr><td class="hr">ići</td><td class="hr">iša<b class="e">o</b></td><td class="hr">iš<b class="e">la</b></td><td class="hr">iš<b class="e">lo</b></td><td class="hr">iš<b class="e">li</b></td><td class="hr">iš<b class="e">le</b></td><td class="hr">iš<b class="e">la</b></td></tr>
+      <tr><td class="hr">doći</td><td class="hr">doša<b class="e">o</b></td><td class="hr">doš<b class="e">la</b></td><td class="hr">doš<b class="e">lo</b></td><td class="hr">doš<b class="e">li</b></td><td class="hr">doš<b class="e">le</b></td><td class="hr">doš<b class="e">la</b></td></tr>
+      <tr><td class="hr">moći</td><td class="hr">moga<b class="e">o</b></td><td class="hr">mog<b class="e">la</b></td><td class="hr">mog<b class="e">lo</b></td><td class="hr">mog<b class="e">li</b></td><td class="hr">mog<b class="e">le</b></td><td class="hr">mog<b class="e">la</b></td></tr>
+      <tr><td class="hr">reći</td><td class="hr">reka<b class="e">o</b></td><td class="hr">rek<b class="e">la</b></td><td class="hr">rek<b class="e">lo</b></td><td class="hr">rek<b class="e">li</b></td><td class="hr">rek<b class="e">le</b></td><td class="hr">rek<b class="e">la</b></td></tr>
+      <tr><td class="hr">htjeti</td><td class="hr">hti<b class="e">o</b></td><td class="hr">htje<b class="e">la</b></td><td class="hr">htje<b class="e">lo</b></td><td class="hr">htje<b class="e">li</b></td><td class="hr">htje<b class="e">le</b></td><td class="hr">htje<b class="e">la</b></td></tr>
+      <tr><td class="hr">vidjeti</td><td class="hr">vidi<b class="e">o</b></td><td class="hr">vidje<b class="e">la</b></td><td class="hr">vidje<b class="e">lo</b></td><td class="hr">vidje<b class="e">li</b></td><td class="hr">vidje<b class="e">le</b></td><td class="hr">vidje<b class="e">la</b></td></tr>
+      <tr><td class="hr">biti</td><td class="hr">bi<b class="e">o</b></td><td class="hr">bi<b class="e">la</b></td><td class="hr">bi<b class="e">lo</b></td><td class="hr">bi<b class="e">li</b></td><td class="hr">bi<b class="e">le</b></td><td class="hr">bi<b class="e">la</b></td></tr>
+      <tr><td class="hr">jesti</td><td class="hr">je<b class="e">o</b></td><td class="hr">je<b class="e">la</b></td><td class="hr">je<b class="e">lo</b></td><td class="hr">je<b class="e">li</b></td><td class="hr">je<b class="e">le</b></td><td class="hr">je<b class="e">la</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><span class="hr">Ja sam čitao. / Čitao sam.</span> — Я читав. · <span class="hr">Ona je došla.</span> · <span class="hr">Nisam bio kod kuće.</span> — Мене не було вдома. · <span class="hr">Jesi li vidio Anu? / Je li Ana došla?</span> Кінцеве <span class="hr">-l</span> перейшло в <span class="hr">-o</span>: <span class="hr">čital → čitao</span> (пор. укр. «читав»).</p>
+
+  <h3>Майбутній I (futur prvi) <span class="badge b1">Етап 1</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th>займенник + ću + інфінітив</th><th>дієслово першим</th><th>-ći дієслово</th><th>заперечення</th><th>питання</th></tr></thead>
+    <tbody>
+      <tr><th>ja</th><td class="hr">ja <b class="e">ću</b> čitati</td><td class="hr">čita<b class="e">t ću</b></td><td class="hr">ići ću</td><td class="hr">neću čitati</td><td class="hr">Hoću li čitati?</td></tr>
+      <tr><th>ti</th><td class="hr">ti <b class="e">ćeš</b> čitati</td><td class="hr">čitat ćeš</td><td class="hr">ići ćeš</td><td class="hr">nećeš čitati</td><td class="hr">Hoćeš li čitati?</td></tr>
+      <tr><th>on/ona</th><td class="hr">on <b class="e">će</b> čitati</td><td class="hr">čitat će</td><td class="hr">ići će</td><td class="hr">neće čitati</td><td class="hr">Hoće li čitati?</td></tr>
+      <tr><th>mi</th><td class="hr">mi <b class="e">ćemo</b> čitati</td><td class="hr">čitat ćemo</td><td class="hr">ići ćemo</td><td class="hr">nećemo čitati</td><td class="hr">Hoćemo li čitati?</td></tr>
+      <tr><th>vi</th><td class="hr">vi <b class="e">ćete</b> čitati</td><td class="hr">čitat ćete</td><td class="hr">ići ćete</td><td class="hr">nećete čitati</td><td class="hr">Hoćete li čitati?</td></tr>
+      <tr><th>oni</th><td class="hr">oni <b class="e">će</b> čitati</td><td class="hr">čitat će</td><td class="hr">ići će</td><td class="hr">neće čitati</td><td class="hr">Hoće li čitati?</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="warn"><b>Правопис:</b> коли інфінітив на <span class="hr">-ti</span> стоїть <b>перед</b> <span class="hr">ću</span>, кінцеве <span class="hr">-i</span> відпадає, але пишемо <b>окремо</b>: <span class="ok">čitat ću, pisat ćeš, govorit ćemo</span>. Дієслова на <span class="hr">-ći</span> нічого не втрачають: <span class="ok">ići ću, doći ćeš, reći ćemo, moći će</span>. <span class="bad">čitaću</span> — сербський правопис! Якщо <span class="hr">ću</span> стоїть першим/після займенника — повний інфінітив: <span class="hr">Ja ću čitati.</span></div>
+
+  <h3>Майбутній II (futur drugi) <span class="badge b3">Етап 3</span></h3>
+  <p><span class="hr">budem, budeš, bude, budemo, budete, budu</span> + l-дієприкметник. Тільки в підрядних реченнях після <span class="hr">ako, kad, čim, dok, što god…</span> про майбутню дію, що передує іншій:</p>
+  <ul>
+    <li><span class="hr">Kad <b class="e">budem imao</b> vremena, nazvat ću te.</span> — Коли матиму час, подзвоню тобі.</li>
+    <li><span class="hr">Ako <b class="e">budeš učio</b>, položit ćeš ispit.</span> — Якщо вчитимешся, складеш іспит.</li>
+    <li>З доконаними дієсловами частіше просто теперішній: <span class="hr">Kad <b class="e">dođem</b> kući, javit ću ti se.</span> — Коли прийду додому, озвуся.</li>
+  </ul>
+
+  <h3>Наказовий спосіб (imperativ) <span class="badge b2">Етап 2</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Інфінітив (3 ос. мн.)</th><th>ti</th><th>mi</th><th>vi</th><th>Українською</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">čitati (čitaju)</td><td class="hr">čita<b class="e">j</b></td><td class="hr">čita<b class="e">jmo</b></td><td class="hr">čita<b class="e">jte</b></td><td>читай</td></tr>
+      <tr><td class="hr">piti (piju)</td><td class="hr">pi<b class="e">j</b></td><td class="hr">pi<b class="e">jmo</b></td><td class="hr">pi<b class="e">jte</b></td><td>пий</td></tr>
+      <tr><td class="hr">govoriti (govore)</td><td class="hr">govor<b class="e">i</b></td><td class="hr">govor<b class="e">imo</b></td><td class="hr">govor<b class="e">ite</b></td><td>говори</td></tr>
+      <tr><td class="hr">pisati (pišu)</td><td class="hr">piš<b class="e">i</b></td><td class="hr">piš<b class="e">imo</b></td><td class="hr">piš<b class="e">ite</b></td><td>пиши</td></tr>
+      <tr><td class="hr">ići (idu)</td><td class="hr">id<b class="e">i</b></td><td class="hr">id<b class="e">imo</b></td><td class="hr">id<b class="e">ite</b></td><td>іди</td></tr>
+      <tr><td class="hr">doći (dođu)</td><td class="hr">dođ<b class="e">i</b></td><td class="hr">dođ<b class="e">imo</b></td><td class="hr">dođ<b class="e">ite</b></td><td>прийди</td></tr>
+      <tr><td class="hr">reći (reku)</td><td class="hr">rec<b class="e">i</b></td><td class="hr">rec<b class="e">imo</b></td><td class="hr">rec<b class="e">ite</b></td><td>скажи</td></tr>
+      <tr><td class="hr">jesti (jedu)</td><td class="hr">jed<b class="e">i</b></td><td class="hr">jed<b class="e">imo</b></td><td class="hr">jed<b class="e">ite</b></td><td>їж</td></tr>
+      <tr><td class="hr">biti</td><td class="hr">budi</td><td class="hr">budimo</td><td class="hr">budite</td><td>будь</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Основа 3 ос. мн.: після голосного → <span class="hr">-j, -jmo, -jte</span>; після приголосного → <span class="hr">-i, -imo, -ite</span>. Заперечення: <span class="hr"><b>nemoj</b> / nemojmo / nemojte</span> + інфінітив — <span class="hr">Nemoj zaboraviti! Nemojte pušiti.</span> (або <span class="hr">Ne puši!</span>). 3 особа: <span class="hr">neka</span> + теперішній — <span class="hr">Neka uđe.</span> (Хай зайде.)</p>
+
+  <h3>Умовний спосіб: kondicional I і II <span class="badge b2">Етап 2 · I</span> <span class="badge b3">Етап 3 · II (впізнавати)</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th>допоміжне</th><th>Kondicional I</th><th>Kondicional II</th></tr></thead>
+    <tbody>
+      <tr><th>ja</th><td class="hr"><b class="e">bih</b></td><td class="hr">čitao / čitala bih</td><td class="hr">bio / bila bih čitao / čitala</td></tr>
+      <tr><th>ti</th><td class="hr"><b class="e">bi</b></td><td class="hr">čitao bi</td><td class="hr">bio bi čitao</td></tr>
+      <tr><th>on/ona</th><td class="hr"><b class="e">bi</b></td><td class="hr">čitao / čitala bi</td><td class="hr">bio bi čitao</td></tr>
+      <tr><th>mi</th><td class="hr"><b class="e">bismo</b></td><td class="hr">čitali bismo</td><td class="hr">bili bismo čitali</td></tr>
+      <tr><th>vi</th><td class="hr"><b class="e">biste</b></td><td class="hr">čitali biste</td><td class="hr">bili biste čitali</td></tr>
+      <tr><th>oni</th><td class="hr"><b class="e">bi</b></td><td class="hr">čitali bi</td><td class="hr">bili bi čitali</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <ul>
+    <li>Kondicional I = укр. «б / би» + минулий: <span class="hr">Volio bih kavu.</span> — Я б хотів кави. · <span class="hr">Biste li mi pomogli?</span> — Чи не могли б ви мені допомогти?</li>
+    <li>Kondicional II — нереальна дія в минулому: <span class="hr">Bio bih došao da sam znao.</span> У розмові його зазвичай замінює kondicional I: <span class="hr">Došao bih da sam znao.</span></li>
+    <li>У стандарті <span class="hr">bih / bismo / biste</span> обов'язкові: <span class="bad">ja bi</span>, <span class="bad">mi bi</span> — розмовні помилки.</li>
+  </ul>
+
+  <h3>Аорист (тільки впізнавати) <span class="badge b3">Етап 3</span></h3>
+  <p>Простий минулий час доконаної дії — у літературі, новинах, оповіданнях. У мовленні його замінює perfekt.</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th></th><th><span class="hr">napisati</span></th><th><span class="hr">reći</span></th><th><span class="hr">doći</span></th><th><span class="hr">biti</span></th></tr></thead>
+    <tbody>
+      <tr><th>ja</th><td class="hr">napisa<b class="e">h</b></td><td class="hr">reko<b class="e">h</b></td><td class="hr">dođo<b class="e">h</b></td><td class="hr">bi<b class="e">h</b></td></tr>
+      <tr><th>ti</th><td class="hr">napisa</td><td class="hr">reče</td><td class="hr">dođe</td><td class="hr">bi</td></tr>
+      <tr><th>on</th><td class="hr">napisa</td><td class="hr">reče</td><td class="hr">dođe</td><td class="hr">bi</td></tr>
+      <tr><th>mi</th><td class="hr">napisa<b class="e">smo</b></td><td class="hr">reko<b class="e">smo</b></td><td class="hr">dođo<b class="e">smo</b></td><td class="hr">bi<b class="e">smo</b></td></tr>
+      <tr><th>vi</th><td class="hr">napisa<b class="e">ste</b></td><td class="hr">reko<b class="e">ste</b></td><td class="hr">dođo<b class="e">ste</b></td><td class="hr">bi<b class="e">ste</b></td></tr>
+      <tr><th>oni</th><td class="hr">napisa<b class="e">še</b></td><td class="hr">reko<b class="e">še</b></td><td class="hr">dođo<b class="e">še</b></td><td class="hr">bi<b class="e">še</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip">Впізнавальні ознаки: <span class="hr">-h, -smo, -ste, -še</span>. Аорист <span class="hr">biti</span> (<span class="hr">bih, bi, bismo…</span>) збігається з допоміжним дієсловом кондиціоналу — звідси й походить <span class="hr">bih čitao</span>. <span class="hr">Reče mi da…</span> = <span class="hr">Rekao mi je da…</span></div>
+
+  <h3>Пасив <span class="badge b3">Етап 3</span></h3>
+  <p><b>1) <span class="hr">biti</span> + пасивний дієприкметник</b> (зазвичай від доконаних; суфікси <span class="hr">-n, -en, -t</span>):</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Інфінітив</th><th>Дієприкметник (ч. / ж. / с.)</th><th>Приклад</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">napisati</td><td class="hr">napisa<b class="e">n</b> / napisana / napisano</td><td class="hr">Knjiga je napisana 1950. — Книжку написано 1950 р.</td></tr>
+      <tr><td class="hr">prodati</td><td class="hr">proda<b class="e">n</b> / prodana / prodano</td><td class="hr">Kuća je prodana. — Будинок продано.</td></tr>
+      <tr><td class="hr">otvoriti / zatvoriti</td><td class="hr">otvor<b class="e">en</b> / zatvor<b class="e">en</b></td><td class="hr">Trgovina je zatvorena. — Крамниця зачинена.</td></tr>
+      <tr><td class="hr">kupiti</td><td class="hr">kuplj<b class="e">en</b> (p + j → plj)</td><td class="hr">Karte su kupljene.</td></tr>
+      <tr><td class="hr">uzeti / zauzeti</td><td class="hr">uze<b class="e">t</b> / zauze<b class="e">t</b></td><td class="hr">Je li ovo mjesto zauzeto? — Це місце зайняте?</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Виконавця дії в пасиві зазвичай не називають; конструкція <span class="hr">od strane</span> + родовий (<span class="hr">od strane ministarstva</span>) — канцелярит, краще активна конструкція.</p>
+  <p><b>2) <span class="hr">se</span>-пасив</b> (дуже поширений, як укр. «-ся»): <span class="hr">Ovdje se govori hrvatski.</span> — Тут розмовляють хорватською. · <span class="hr">Kako se kaže…?</span> — Як сказати…? · <span class="hr">Kuća se gradi.</span> — Будинок будується. · <span class="hr">Karte se prodaju na blagajni.</span></p>
+
+  <h3>Дієприслівники (glagolski prilozi, впізнавати) <span class="badge b3">Етап 3</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Вид</th><th>Утворення</th><th>Приклади</th><th>Українська</th></tr></thead>
+    <tbody>
+      <tr><td><b>sadašnji</b> (одночасна дія)</td><td>недок., 3 ос. мн. + <b class="e">-ći</b></td><td class="hr">čitaju → čitaju<b class="e">ći</b>; govore → govore<b class="e">ći</b>; idu → idu<b class="e">ći</b>; pišu → pišu<b class="e">ći</b></td><td>читаючи, говорячи, ідучи, пишучи</td></tr>
+      <tr><td><b>prošli</b> (попередня дія)</td><td>док., основа інфінітива + <b class="e">-vši / -avši</b></td><td class="hr">pročitati → pročita<b class="e">vši</b>; napisati → napisa<b class="e">vši</b>; doći → doša<b class="e">vši</b>; reći → reka<b class="e">vši</b></td><td>прочитавши, написавши, прийшовши, сказавши</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><span class="hr">Šetajući gradom, sreo sam prijatelja.</span> — Гуляючи містом, я зустрів друга. · <span class="hr">Pročitavši pismo, nasmijala se.</span> — Прочитавши лист, вона засміялася. Не плутайте з прикметником: <span class="hr">idući tjedan</span> — наступного тижня.</p>
+
+  <h3>Вид дієслова: 24 пари <span class="badge b2">Етап 2</span></h3>
+  <p>Система видів — як в українській: недоконаний (процес, повтор) / доконаний (результат). Доконані в теперішньому часі не означають «зараз»: <span class="hr">Kad dođem…</span> (коли прийду). <span class="hr">Moram napisati pismo</span> (результат) vs <span class="hr">Pišem pismo</span> (зараз).</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Недоконаний</th><th>Доконаний</th><th>Українською</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">pisati</td><td class="hr"><b class="e">na</b>pisati</td><td>писати / написати</td></tr>
+      <tr><td class="hr">čitati</td><td class="hr"><b class="e">pro</b>čitati</td><td>читати / прочитати</td></tr>
+      <tr><td class="hr">kup<b class="e">ova</b>ti</td><td class="hr">kupiti</td><td>купувати / купити</td></tr>
+      <tr><td class="hr">dol<b class="e">azi</b>ti</td><td class="hr">doći</td><td>приходити / прийти</td></tr>
+      <tr><td class="hr">odl<b class="e">azi</b>ti</td><td class="hr">otići</td><td>іти геть / піти</td></tr>
+      <tr><td class="hr">d<b class="e">ava</b>ti</td><td class="hr">dati</td><td>давати / дати</td></tr>
+      <tr><td class="hr">uz<b class="e">ima</b>ti</td><td class="hr">uzeti</td><td>брати / взяти</td></tr>
+      <tr><td class="hr">govoriti</td><td class="hr">reći</td><td>говорити / сказати</td></tr>
+      <tr><td class="hr">učiti</td><td class="hr"><b class="e">na</b>učiti</td><td>вчити / вивчити</td></tr>
+      <tr><td class="hr">piti</td><td class="hr"><b class="e">po</b>piti</td><td>пити / випити</td></tr>
+      <tr><td class="hr">jesti</td><td class="hr"><b class="e">po</b>jesti</td><td>їсти / з'їсти</td></tr>
+      <tr><td class="hr">gledati</td><td class="hr"><b class="e">po</b>gledati</td><td>дивитися / подивитися</td></tr>
+      <tr><td class="hr">zvati</td><td class="hr"><b class="e">na</b>zvati</td><td>дзвонити, кликати / подзвонити</td></tr>
+      <tr><td class="hr">otv<b class="e">ara</b>ti</td><td class="hr">otvoriti</td><td>відчиняти / відчинити</td></tr>
+      <tr><td class="hr">zatv<b class="e">ara</b>ti</td><td class="hr">zatvoriti</td><td>зачиняти / зачинити</td></tr>
+      <tr><td class="hr">poč<b class="e">inja</b>ti</td><td class="hr">početi</td><td>починати / почати</td></tr>
+      <tr><td class="hr">zavr<b class="e">šava</b>ti</td><td class="hr">završiti</td><td>закінчувати / закінчити</td></tr>
+      <tr><td class="hr">vr<b class="e">aća</b>ti (se)</td><td class="hr">vratiti (se)</td><td>повертати(ся) / повернути(ся)</td></tr>
+      <tr><td class="hr">slati</td><td class="hr"><b class="e">po</b>slati</td><td>надсилати / надіслати</td></tr>
+      <tr><td class="hr">pom<b class="e">aga</b>ti</td><td class="hr">pomoći</td><td>допомагати / допомогти</td></tr>
+      <tr><td class="hr">ust<b class="e">aja</b>ti</td><td class="hr">ustati</td><td>вставати / встати</td></tr>
+      <tr><td class="hr">prod<b class="e">ava</b>ti</td><td class="hr">prodati</td><td>продавати / продати</td></tr>
+      <tr><td class="hr">pokaz<b class="e">iva</b>ti</td><td class="hr">pokazati</td><td>показувати / показати</td></tr>
+      <tr><td class="hr">objaš<b class="e">nja</b>vati</td><td class="hr">objasniti</td><td>пояснювати / пояснити</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip">Ті самі механізми, що й в українській: префікс робить доконаний (<span class="hr">na-, pro-, po-, u-, iz-</span>), суфікс <span class="hr">-ava-, -iva-, -ova-, -a-</span> — недоконаний. Префіксальні дієслова руху: <span class="hr">ići → doći / dolaziti, otići / odlaziti, ući / ulaziti, izići (izaći) / izlaziti, prijeći / prelaziti, proći / prolaziti</span>.</div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 7. NUMBERS ============ -->
+<section class="g-section" id="numbers">
+  <h2>7. Числівники <span class="badge b1">Етап 1 · 1–1000, час</span> <span class="badge b2">Етап 2 · узгодження</span></h2>
+
+  <h3>Кількісні та порядкові</h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>№</th><th>Кількісний</th><th>Порядковий</th><th>№</th><th>Кількісний</th><th>Порядковий</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td class="hr">jedan / jedna / jedno</td><td class="hr">prvi</td><td>16</td><td class="hr">šesnaest</td><td class="hr">šesnaesti</td></tr>
+      <tr><td>2</td><td class="hr">dva / dvije <small>(ж. р.)</small></td><td class="hr">drugi</td><td>17</td><td class="hr">sedamnaest</td><td class="hr">sedamnaesti</td></tr>
+      <tr><td>3</td><td class="hr">tri</td><td class="hr">treći</td><td>18</td><td class="hr">osamnaest</td><td class="hr">osamnaesti</td></tr>
+      <tr><td>4</td><td class="hr">četiri</td><td class="hr">četvrti</td><td>19</td><td class="hr">devetnaest</td><td class="hr">devetnaesti</td></tr>
+      <tr><td>5</td><td class="hr">pet</td><td class="hr">peti</td><td>20</td><td class="hr">dvadeset</td><td class="hr">dvadeseti</td></tr>
+      <tr><td>6</td><td class="hr">šest</td><td class="hr">šesti</td><td>21</td><td class="hr">dvadeset (i) jedan</td><td class="hr">dvadeset prvi</td></tr>
+      <tr><td>7</td><td class="hr">sedam</td><td class="hr">sedmi</td><td>30</td><td class="hr">trideset</td><td class="hr">trideseti</td></tr>
+      <tr><td>8</td><td class="hr">osam</td><td class="hr">osmi</td><td>40</td><td class="hr">četrdeset</td><td class="hr">četrdeseti</td></tr>
+      <tr><td>9</td><td class="hr">devet</td><td class="hr">deveti</td><td>50 · 60</td><td class="hr">pedeset · šezdeset</td><td class="hr">pedeseti · šezdeseti</td></tr>
+      <tr><td>10</td><td class="hr">deset</td><td class="hr">deseti</td><td>70 · 80 · 90</td><td class="hr">sedamdeset · osamdeset · devedeset</td><td class="hr">sedamdeseti…</td></tr>
+      <tr><td>11</td><td class="hr">jedanaest</td><td class="hr">jedanaesti</td><td>100</td><td class="hr">sto (stotinu)</td><td class="hr">stoti</td></tr>
+      <tr><td>12</td><td class="hr">dvanaest</td><td class="hr">dvanaesti</td><td>200 · 300 · 400</td><td class="hr">dvjesto · tristo · četiristo</td><td class="hr">dvjestoti…</td></tr>
+      <tr><td>13</td><td class="hr">trinaest</td><td class="hr">trinaesti</td><td>500 · 600</td><td class="hr">petsto · šesto</td><td class="hr">petstoti</td></tr>
+      <tr><td>14</td><td class="hr">četrnaest</td><td class="hr">četrnaesti</td><td>700 · 800 · 900</td><td class="hr">sedamsto · osamsto · devetsto</td><td class="hr">—</td></tr>
+      <tr><td>15</td><td class="hr">petnaest</td><td class="hr">petnaesti</td><td>1000 · 2000 · 5000</td><td class="hr">tisuća · dvije tisuće · pet tisuća</td><td class="hr">tisućiti</td></tr>
+      <tr><td></td><td></td><td></td><td>10⁶ · 10⁹</td><td class="hr">milijun · milijarda</td><td></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Порядкові пишуться цифрою з крапкою: <span class="hr">5. kat</span> (п'ятий поверх), <span class="hr">21. stoljeće</span>. Порядкові відмінюються як прикметники: <span class="hr">na trećem katu</span>.</p>
+
+  <h3>Узгодження: 1 · 2–4 · 5+ <span class="badge b2">Етап 2</span></h3>
+  <div class="num3">
+    <div class="n1"><h4>1</h4><b>називний однини</b>
+      <p class="hr">jedan student<br>jedna žena<br>jedno selo<br>dvadeset i jedan student</p>
+      <small>Числівник узгоджується в роді, як прикметник.</small></div>
+    <div class="n2"><h4>2, 3, 4</h4><b>ч./с. р.: форма на -a; ж. р.: на -e</b>
+      <p class="hr">dva student<b class="e">a</b>, tri grad<b class="e">a</b><br>dvije žen<b class="e">e</b>, četiri stvar<b class="e">i</b><br>dva nov<b class="e">a</b> student<b class="e">a</b> · dvije nov<b class="e">e</b> žen<b class="e">e</b></p>
+      <small>Також 22, 33, 104… (але <u>не</u> 12–14).</small></div>
+    <div class="n5"><h4>5+</h4><b>родовий множини</b>
+      <p class="hr">pet student<b class="e">ata</b><br>šest žen<b class="e">a</b>, deset sel<b class="e">a</b><br>jedanaest, dvanaest… student<b class="e">ata</b></p>
+      <small>Так само після <span class="hr">mnogo, puno, malo, nekoliko, koliko</span>. Дієслово: <span class="hr">Pet studenata <b>je došlo</b></span> (одн., с. р.).</small></div>
+  </div>
+  <div class="tip">Порівняйте з українською: «два студенти, п'ять студентів» — логіка та сама (1 / 2–4 / 5+), відрізняється лише форма для 2–4.</div>
+
+  <h3>Час <span class="badge b1">Етап 1</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Хорватською</th><th>Українською</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">Koliko je sati?</td><td>Котра година?</td></tr>
+      <tr><td class="hr">Jedan je sat. · Dva su sata. · Pet je sati.</td><td>Перша. · Друга. · П'ята. (знову 1 / 2–4 / 5+!)</td></tr>
+      <tr><td class="hr">U koliko sati? — U osam (sati).</td><td>О котрій? — О восьмій.</td></tr>
+      <tr><td class="hr">osam i petnaest / osam i četvrt</td><td>8:15</td></tr>
+      <tr><td class="hr">pola devet</td><td>8:30 — «пів на дев'яту» (точно як в укр.!)</td></tr>
+      <tr><td class="hr">četvrt do devet · deset do devet</td><td>8:45 · 8:50</td></tr>
+      <tr><td class="hr">ujutro · podne · poslijepodne · navečer · noću · ponoć</td><td>вранці · полудень · після обіду · ввечері · вночі · північ</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Дати, дні, місяці <span class="badge b1">Етап 1</span></h3>
+  <ul>
+    <li><span class="hr">Koji je danas datum? — Danas je 13. listopada</span> (читається <span class="hr">trinaesti listopada</span>: порядковий у називному + місяць у родовому).</li>
+    <li><span class="hr">Rođena sam 5. svibnja 1990.</span> — <span class="hr">petog svibnja tisuću devetsto devedesete</span>. · <span class="hr">2026. godine</span> — <span class="hr">dvije tisuće dvadeset šeste godine</span>.</li>
+    <li>Місяць: <span class="hr">u svibnju</span> (місцевий) — у травні. День тижня: <span class="hr">u ponedjeljak</span> (знахідний) — у понеділок; <span class="hr">ponedjeljkom</span> (орудний) — щопонеділка.</li>
+    <li>Дні: <span class="hr">ponedjeljak, utorak, srijeda, četvrtak, petak, subota, nedjelja</span>.</li>
+  </ul>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Хорватський місяць</th><th>Значення</th><th>Пастка</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">siječanj</td><td>січень</td><td>✓</td></tr>
+      <tr><td class="hr">veljača</td><td>лютий</td><td></td></tr>
+      <tr><td class="hr">ožujak</td><td>березень</td><td></td></tr>
+      <tr><td class="hr"><b>travanj</b></td><td><b>квітень</b></td><td class="bad" style="text-decoration:none">не травень!</td></tr>
+      <tr><td class="hr">svibanj</td><td>травень</td><td></td></tr>
+      <tr><td class="hr"><b>lipanj</b></td><td><b>червень</b></td><td class="bad" style="text-decoration:none">не липень!</td></tr>
+      <tr><td class="hr"><b>srpanj</b></td><td><b>липень</b></td><td class="bad" style="text-decoration:none">не серпень!</td></tr>
+      <tr><td class="hr">kolovoz</td><td>серпень</td><td></td></tr>
+      <tr><td class="hr">rujan</td><td>вересень</td><td></td></tr>
+      <tr><td class="hr"><b>listopad</b></td><td><b>жовтень</b></td><td class="bad" style="text-decoration:none">не листопад!</td></tr>
+      <tr><td class="hr">studeni</td><td>листопад</td><td></td></tr>
+      <tr><td class="hr">prosinac</td><td>грудень</td><td></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 8. SYNTAX ============ -->
+<section class="g-section" id="syntax">
+  <h2>8. Порядок слів і складні речення <span class="badge b2">Етап 2 · сполучники</span> <span class="badge b3">Етап 3 · умовні, непряма мова</span></h2>
+  <p>Порядок слів вільний, як в українській (базовий — S V O; нова інформація — в кінці). Жорстке лише одне правило — <a href="#clitics">енклітики на другій позиції</a>.</p>
+
+  <h3>Сполучники <span class="badge b2">Етап 2</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Сполучник</th><th>Значення</th><th>Приклад</th><th>Переклад</th></tr></thead>
+    <tbody>
+      <tr><td class="hr"><b>jer</b></td><td>бо</td><td class="hr">Ne idem van jer pada kiša.</td><td>Не виходжу, бо йде дощ.</td></tr>
+      <tr><td class="hr"><b>zato što</b></td><td>тому що</td><td class="hr">Učim hrvatski zato što živim u Zagrebu.</td><td>Вчу хорватську, тому що живу в Загребі.</td></tr>
+      <tr><td class="hr"><b>iako</b></td><td>хоча</td><td class="hr">Iako je umoran, još radi.</td><td>Хоч він утомлений, ще працює.</td></tr>
+      <tr><td class="hr"><b>dok</b></td><td>поки; тоді як</td><td class="hr">Dok kuham, slušam radio. · Čekaj dok ne dođem.</td><td>Поки варю, слухаю радіо. · Чекай, поки я не прийду.</td></tr>
+      <tr><td class="hr"><b>kad / kada</b></td><td>коли</td><td class="hr">Kad dođem kući, nazvat ću te.</td><td>Коли прийду додому, подзвоню тобі.</td></tr>
+      <tr><td class="hr"><b>čim</b></td><td>щойно, як тільки</td><td class="hr">Čim stignem, javit ću ti se.</td><td>Щойно приїду, озвуся до тебе.</td></tr>
+      <tr><td class="hr"><b>ako</b></td><td>якщо</td><td class="hr">Ako sutra bude lijepo, idemo na izlet.</td><td>Якщо завтра буде гарна погода, їдемо на екскурсію.</td></tr>
+      <tr><td class="hr"><b>ukoliko</b></td><td>якщо (офіційно)</td><td class="hr">Ukoliko imate pitanja, javite nam se.</td><td>Якщо маєте запитання, зверніться до нас.</td></tr>
+      <tr><td class="hr"><b>da</b></td><td>що; щоб</td><td class="hr">Mislim da je to dobro. · Došao sam da ti pomognem.</td><td>Думаю, що це добре. · Я прийшов, щоб тобі допомогти.</td></tr>
+      <tr><td class="hr"><b>kako bi(h)</b></td><td>щоб (книжно)</td><td class="hr">Učim kako bih dobio bolji posao.</td><td>Вчуся, щоб отримати кращу роботу.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="warn">На питання <span class="hr">Zašto?</span> відповідають <span class="hr">Zato što…</span> або <span class="hr">Jer…</span>. Після <span class="hr">kad, čim, ako</span> про майбутнє — доконаний теперішній або futur II, <b>не</b> futur I: <span class="bad">Kad ću doći…</span> → <span class="ok">Kad dođem…</span></div>
+
+  <h3>Умовні речення <span class="badge b3">Етап 3</span></h3>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Тип</th><th>Схема</th><th>Приклад</th><th>Українською</th></tr></thead>
+    <tbody>
+      <tr><td><b>Реальна умова</b></td><td><span class="hr">ako</span> + теперішній (док.) / futur II → futur I / імператив</td><td class="hr">Ako dođeš, ići ćemo u kino. · Ako budeš imao vremena, nazovi me.</td><td>Якщо прийдеш, підемо в кіно. · Якщо матимеш час, подзвони.</td></tr>
+      <tr><td><b>Потенційна / нереальна (тепер)</b></td><td><span class="hr">kad bih</span> + l-дієпр. → kondicional I; або <span class="hr">da</span> + теперішній</td><td class="hr">Kad bih imao novca, kupio bih kuću. · Da imam novca, kupio bih kuću.</td><td>Якби я мав гроші, купив би будинок.</td></tr>
+      <tr><td><b>Нереальна (минуле)</b></td><td><span class="hr">da sam</span> + l-дієпр. (perfekt) → kondicional I/II</td><td class="hr">Da sam znao, došao bih. / …bio bih došao.</td><td>Якби я знав, я б прийшов.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><span class="hr">kad bih, kad bi, kad bismo…</span> — сполучник <span class="hr">kad</span> + <span class="hr">bih</span> пишуться окремо; <span class="hr">kada</span> теж можливо.</p>
+
+  <h3>Непряма мова <span class="badge b3">Етап 3</span></h3>
+  <p>Як в українській — <b>без узгодження часів</b> (на відміну від англійської): час прямої мови зберігається, змінюються лише особи.</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Тип</th><th>Пряма мова</th><th>Непряма мова</th></tr></thead>
+    <tbody>
+      <tr><td>Твердження → <span class="hr">da</span></td><td class="hr">Rekao je: „Umoran sam.”</td><td class="hr">Rekao je <b class="e">da je</b> umoran.</td></tr>
+      <tr><td>Питання так/ні → <span class="hr">…li</span></td><td class="hr">Pitala me: „Dolaziš li?”</td><td class="hr">Pitala me <b class="e">dolazim li</b>.</td></tr>
+      <tr><td>Питання зі словом → те саме слово</td><td class="hr">Pitao je: „Gdje živiš?”</td><td class="hr">Pitao je <b class="e">gdje živim</b>.</td></tr>
+      <tr><td>Наказ → <span class="hr">da</span> + теперішній</td><td class="hr">Rekla mi je: „Dođi!”</td><td class="hr">Rekla mi je <b class="e">da dođem</b>.</td></tr>
+      <tr><td>Майбутнє зберігається</td><td class="hr">Rekao je: „Doći ću.”</td><td class="hr">Rekao je <b class="e">da će doći</b>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 9. FALSE FRIENDS ============ -->
+<section class="g-section" id="false-friends">
+  <h2>9. Хибні друзі перекладача <span class="badge ball">Усі етапи</span></h2>
+  <p>Слова, схожі на українські, але з іншим значенням. Найнебезпечніші — ті, що звучать майже однаково.</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Хорватське слово</th><th>Справжнє значення</th><th>Не плутати з укр.</th><th>Як сказати укр. значення хорватською</th></tr></thead>
+    <tbody>
+      <tr><td class="hr">godina</td><td>рік</td><td>година</td><td class="hr">sat</td></tr>
+      <tr><td class="hr">sat</td><td>година; годинник; урок</td><td>сад</td><td class="hr">vrt (сад)</td></tr>
+      <tr><td class="hr">čas</td><td>мить, момент</td><td>час</td><td class="hr">vrijeme (час; також погода)</td></tr>
+      <tr><td class="hr">život</td><td>життя</td><td>живіт</td><td class="hr">trbuh</td></tr>
+      <tr><td class="hr">stolica</td><td>стілець</td><td>столиця</td><td class="hr">glavni grad</td></tr>
+      <tr><td class="hr">grad</td><td>місто</td><td>град (опади)</td><td class="hr">tuča</td></tr>
+      <tr><td class="hr">mjesto</td><td>місце; населений пункт, містечко</td><td>місто</td><td class="hr">grad</td></tr>
+      <tr><td class="hr">tuča</td><td>град; бійка</td><td>туча (хмара)</td><td class="hr">oblak (хмара)</td></tr>
+      <tr><td class="hr">slovo</td><td>літера</td><td>слово</td><td class="hr">riječ</td></tr>
+      <tr><td class="hr">riječ</td><td>слово</td><td>річ</td><td class="hr">stvar</td></tr>
+      <tr><td class="hr">ponos</td><td>гордість</td><td>понос</td><td class="hr">proljev</td></tr>
+      <tr><td class="hr">brak</td><td>шлюб</td><td>брак (нестача, дефект)</td><td class="hr">nedostatak; škart</td></tr>
+      <tr><td class="hr">kat</td><td>поверх</td><td>кат</td><td class="hr">krvnik</td></tr>
+      <tr><td class="hr">jagoda</td><td>полуниця</td><td>ягода</td><td class="hr">bobica</td></tr>
+      <tr><td class="hr">luk</td><td>цибуля (також лук, дуга)</td><td>лук (зброя) — збігається лише частково</td><td class="hr">češnjak — часник</td></tr>
+      <tr><td class="hr">čudan</td><td>дивний</td><td>чудовий</td><td class="hr">divan, prekrasan</td></tr>
+      <tr><td class="hr">spor</td><td>повільний</td><td>спорий (швидкий, вправний)</td><td class="hr">brz, spretan</td></tr>
+      <tr><td class="hr">zgodan</td><td>гарний, симпатичний; зручний</td><td>згодний (згоден)</td><td class="hr">suglasan; slažem se</td></tr>
+      <tr><td class="hr">pametan</td><td>розумний</td><td>пам'ятний</td><td class="hr">nezaboravan</td></tr>
+      <tr><td class="hr">trudna</td><td>вагітна</td><td>трудна (важка)</td><td class="hr">teška</td></tr>
+      <tr><td class="hr">dobiti</td><td>отримати</td><td>добити</td><td class="hr">dokrajčiti</td></tr>
+      <tr><td class="hr">pokušati</td><td>спробувати (зробити)</td><td>покуштувати</td><td class="hr">kušati, probati</td></tr>
+      <tr><td class="hr">vlada</td><td>уряд</td><td>влада</td><td class="hr">vlast</td></tr>
+      <tr><td class="hr">ured</td><td>офіс, контора</td><td>уряд</td><td class="hr">vlada</td></tr>
+      <tr><td class="hr">zavod</td><td>установа, інститут, служба</td><td>завод</td><td class="hr">tvornica</td></tr>
+      <tr><td class="hr">kosa</td><td>волосся (також коса-знаряддя)</td><td>коса (заплетена)</td><td class="hr">pletenica</td></tr>
+      <tr><td class="hr">palac</td><td>великий палець</td><td>палець (будь-який)</td><td class="hr">prst</td></tr>
+      <tr><td class="hr">bistar</td><td>прозорий (про воду); кмітливий</td><td>бистрий (швидкий)</td><td class="hr">brz</td></tr>
+      <tr><td class="hr">vrijedan</td><td>працьовитий; цінний</td><td>«вредний» (шкідливий)</td><td class="hr">štetan; zločest</td></tr>
+      <tr><td class="hr">muka</td><td>мука, страждання; нудота (<span class="hr">muka mi je</span> — мене нудить)</td><td>мука (борошно)</td><td class="hr">brašno</td></tr>
+      <tr><td class="hr">otok</td><td>острів</td><td>отік, набряк</td><td class="hr">oteklina</td></tr>
+      <tr><td class="hr">travanj · lipanj · srpanj · listopad</td><td>квітень · червень · липень · жовтень</td><td>травень · липень · серпень · листопад</td><td class="hr">svibanj · srpanj · kolovoz · studeni</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="false-friend">Класична пастка: <span class="hr">Za godinu dana</span> — «через рік», а не «через годину». <span class="hr">Za sat vremena</span> — через годину.</div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+<!-- ============ 10. HR vs SR ============ -->
+<section class="g-section" id="hr-vs-sr">
+  <h2>10. Хорватська vs сербська <span class="badge ball">Усі етапи</span></h2>
+  <p>Мови взаємозрозумілі, але в Хорватії сербські форми звучать як «не наше». В інтернеті й підручниках трапляються обидва варіанти — перевіряйте себе за цією таблицею.</p>
+  <div class="scroll">
+  <table class="ref">
+    <thead><tr><th>Українською</th><th>Хорватська <span class="ok">✔</span></th><th>Сербська <span class="bad" style="text-decoration:none">✘</span></th></tr></thead>
+    <tbody>
+      <tr><td>хліб</td><td class="hr ok">kruh</td><td class="hr">hleb / hljeb</td></tr>
+      <tr><td>тисяча</td><td class="hr ok">tisuća</td><td class="hr">hiljada</td></tr>
+      <tr><td>мільйон</td><td class="hr ok">milijun</td><td class="hr">milion</td></tr>
+      <tr><td>поїзд</td><td class="hr ok">vlak</td><td class="hr">voz</td></tr>
+      <tr><td>вокзал</td><td class="hr ok">(željeznički) kolodvor</td><td class="hr">(železnička) stanica</td></tr>
+      <tr><td>кава</td><td class="hr ok">kava</td><td class="hr">kafa</td></tr>
+      <tr><td>тиждень</td><td class="hr ok">tjedan</td><td class="hr">nedelja, sedmica</td></tr>
+      <tr><td>молоко, де, вчора</td><td class="hr ok">mlijeko, gdje, jučer</td><td class="hr">mleko, gde, juče (екавиця)</td></tr>
+      <tr><td>хто? що?</td><td class="hr ok">tko? što?</td><td class="hr">ko? šta?</td></tr>
+      <tr><td>точно</td><td class="hr ok">točno</td><td class="hr">tačno</td></tr>
+      <tr><td>музика</td><td class="hr ok">glazba</td><td class="hr">muzika</td></tr>
+      <tr><td>театр</td><td class="hr ok">kazalište</td><td class="hr">pozorište</td></tr>
+      <tr><td>історія</td><td class="hr ok">povijest</td><td class="hr">istorija</td></tr>
+      <tr><td>сім'я</td><td class="hr ok">obitelj</td><td class="hr">porodica</td></tr>
+      <tr><td>університет</td><td class="hr ok">sveučilište</td><td class="hr">univerzitet</td></tr>
+      <tr><td>повітря</td><td class="hr ok">zrak</td><td class="hr">vazduh</td></tr>
+      <tr><td>поверх</td><td class="hr ok">kat</td><td class="hr">sprat</td></tr>
+      <tr><td>завод</td><td class="hr ok">tvornica</td><td class="hr">fabrika</td></tr>
+      <tr><td>помідор · морква</td><td class="hr ok">rajčica · mrkva</td><td class="hr">paradajz · šargarepa</td></tr>
+      <tr><td>футбол</td><td class="hr ok">nogomet</td><td class="hr">fudbal</td></tr>
+      <tr><td>варити</td><td class="hr ok">kuhati</td><td class="hr">kuvati</td></tr>
+      <tr><td>місяці</td><td class="hr ok">siječanj, veljača…</td><td class="hr">januar, februar…</td></tr>
+      <tr><td><b>Граматика:</b> мушу йти</td><td class="hr ok">Moram ići.</td><td class="hr">Moram da idem.</td></tr>
+      <tr><td><b>Правопис:</b> читатиму</td><td class="hr ok">čitat ću</td><td class="hr">čitaću</td></tr>
+      <tr><td><b>Дієслова на -irati:</b> організувати</td><td class="hr ok">organizirati, definirati</td><td class="hr">organizovati, definisati</td></tr>
+      <tr><td><b>Пасивний дієпр.:</b> проданий</td><td class="hr ok">prodan</td><td class="hr">prodat</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="tip">Хорватська пише тільки латиницею; сербська — кирилицею і латиницею. Якщо бачите <span class="hr">šta, hiljada, voz, -ću</span> разом — це сербський текст.</div>
+  <a class="totop" href="#top">↑ До змісту</a>
+</section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мій словник · хорватська</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+<style>
+  .vocab-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .vocab-form label { display: flex; flex-direction: column; gap: 4px; font-size: .9rem; color: var(--muted); }
+  .vocab-form .wide { grid-column: 1 / -1; }
+  .vocab-form input { font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); }
+  .vocab-form .actions { grid-column: 1 / -1; display: flex; gap: 8px; }
+  .primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .primary:hover { filter: brightness(1.08); }
+  .vocab-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 20px 0 10px; }
+  .vocab-tools input[type="search"] { flex: 1 1 220px; font: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
+  .vocab-count { color: var(--muted); font-size: .9rem; }
+  .vocab-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .vocab-item { display: flex; gap: 12px; align-items: flex-start; }
+  .vocab-item .body { flex: 1; min-width: 0; }
+  .vocab-item .word { font-weight: 700; font-size: 1.08rem; }
+  .vocab-item .tr { color: var(--text); }
+  .vocab-item .ex { color: var(--muted); font-style: italic; font-size: .92rem; margin-top: 2px; }
+  .vocab-item .meta { color: var(--muted); font-size: .8rem; margin-top: 2px; }
+  .vocab-item button { padding: 4px 10px; font-size: .85rem; }
+  .vocab-empty { color: var(--muted); }
+  #vocab-import { display: none; }
+  @media (max-width: 640px) { .vocab-form { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">Огляд</a>
+  <a href="phase-1.html">Етап 1 · A1→A2</a>
+  <a href="phase-2.html">Етап 2 · A2→B1.1</a>
+  <a href="phase-3.html">Етап 3 · B1</a>
+  <a href="grammar.html">Граматика</a>
+  <a href="vocab.html">Словник</a>
+  <a href="cards.html">Картки</a>
+  <a href="chat.html">AI-чат</a>
+</nav>
+
+<main class="container">
+
+<header class="hero">
+  <h1>Мій словник</h1>
+  <p>Додавай нові слова будь-коли. Усе зберігається в цьому браузері й не зникає після закриття. Кнопка «Скинути прогрес» на головній словник не чіпає. Для резервної копії натисни «Експорт».</p>
+</header>
+
+<form class="card vocab-form" id="vocab-form" autocomplete="off">
+  <label>Хорватською *
+    <input id="f-word" required placeholder="npr. kuća">
+  </label>
+  <label>Українською *
+    <input id="f-tr" required placeholder="будинок">
+  </label>
+  <label class="wide">Приклад (необов'язково)
+    <input id="f-ex" placeholder="Moja kuća je velika.">
+  </label>
+  <label class="wide">Тема / тиждень (необов'язково)
+    <input id="f-tag" placeholder="тиждень 2, дім">
+  </label>
+  <div class="actions">
+    <button type="submit" class="primary" id="f-submit">Додати</button>
+    <button type="button" id="f-cancel" hidden>Скасувати</button>
+  </div>
+</form>
+
+<div class="vocab-tools">
+  <input type="search" id="vocab-search" placeholder="Пошук…">
+  <span class="vocab-count" id="vocab-count"></span>
+  <button type="button" id="vocab-export">Експорт</button>
+  <button type="button" id="vocab-import-btn">Імпорт</button>
+  <input type="file" id="vocab-import" accept=".json,application/json">
+</div>
+
+<ul class="vocab-list" id="vocab-list"></ul>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "hr-vocab";
+  var words = load();
+  var editingId = null;
+
+  var form = document.getElementById("vocab-form");
+  var fWord = document.getElementById("f-word");
+  var fTr = document.getElementById("f-tr");
+  var fEx = document.getElementById("f-ex");
+  var fTag = document.getElementById("f-tag");
+  var submitBtn = document.getElementById("f-submit");
+  var cancelBtn = document.getElementById("f-cancel");
+  var search = document.getElementById("vocab-search");
+  var list = document.getElementById("vocab-list");
+  var count = document.getElementById("vocab-count");
+  var importInput = document.getElementById("vocab-import");
+
+  function load() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function save() {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(words));
+    } catch (e) {
+      window.alert("Не вдалося зберегти: сховище браузера недоступне.");
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function wordsLabel(n) {
+    var mod10 = n % 10;
+    var mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return "слово";
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "слова";
+    return "слів";
+  }
+
+  function render() {
+    var q = search.value.trim().toLowerCase();
+    var shown = words.filter(function (w) {
+      if (!q) return true;
+      return (w.word + " " + w.tr + " " + (w.ex || "") + " " + (w.tag || "")).toLowerCase().indexOf(q) !== -1;
+    });
+    count.textContent = q ? shown.length + " з " + words.length + " " + wordsLabel(words.length) : words.length + " " + wordsLabel(words.length);
+
+    if (shown.length === 0) {
+      list.innerHTML = '<li class="vocab-empty">' + (words.length ? "Нічого не знайдено." : "Словник порожній — додай перше слово.") + "</li>";
+      return;
+    }
+
+    var html = "";
+    for (var i = 0; i < shown.length; i++) {
+      var w = shown[i];
+      html += '<li class="card vocab-item"><div class="body">' +
+        '<div><span class="word hr">' + escapeHtml(w.word) + '</span> — <span class="tr">' + escapeHtml(w.tr) + "</span></div>" +
+        (w.ex ? '<div class="ex hr">' + escapeHtml(w.ex) + "</div>" : "") +
+        '<div class="meta">' + (w.tag ? escapeHtml(w.tag) + " · " : "") + new Date(w.added).toLocaleDateString("uk-UA") + "</div>" +
+        '</div><button type="button" data-edit="' + w.id + '">Змінити</button>' +
+        '<button type="button" data-del="' + w.id + '">Видалити</button></li>';
+    }
+    list.innerHTML = html;
+  }
+
+  function resetForm() {
+    form.reset();
+    editingId = null;
+    submitBtn.textContent = "Додати";
+    cancelBtn.hidden = true;
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var entry = {
+      word: fWord.value.trim(),
+      tr: fTr.value.trim(),
+      ex: fEx.value.trim(),
+      tag: fTag.value.trim()
+    };
+    if (!entry.word || !entry.tr) return;
+
+    if (editingId) {
+      for (var i = 0; i < words.length; i++) {
+        if (words[i].id === editingId) {
+          entry.id = words[i].id;
+          entry.added = words[i].added;
+          words[i] = entry;
+        }
+      }
+    } else {
+      entry.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      entry.added = Date.now();
+      words.unshift(entry);
+    }
+    save();
+    resetForm();
+    render();
+    fWord.focus();
+  });
+
+  cancelBtn.addEventListener("click", resetForm);
+
+  list.addEventListener("click", function (event) {
+    var delId = event.target.getAttribute("data-del");
+    var editId = event.target.getAttribute("data-edit");
+    if (delId) {
+      if (!window.confirm("Видалити це слово?")) return;
+      words = words.filter(function (w) { return w.id !== delId; });
+      save();
+      render();
+    }
+    if (editId) {
+      var w = words.filter(function (x) { return x.id === editId; })[0];
+      if (!w) return;
+      editingId = w.id;
+      fWord.value = w.word;
+      fTr.value = w.tr;
+      fEx.value = w.ex || "";
+      fTag.value = w.tag || "";
+      submitBtn.textContent = "Зберегти";
+      cancelBtn.hidden = false;
+      form.scrollIntoView({ behavior: "smooth" });
+      fWord.focus();
+    }
+  });
+
+  search.addEventListener("input", render);
+
+  document.getElementById("vocab-export").addEventListener("click", function () {
+    var blob = new Blob([JSON.stringify(words, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "croatian-vocab-" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+  });
+
+  document.getElementById("vocab-import-btn").addEventListener("click", function () {
+    importInput.click();
+  });
+
+  importInput.addEventListener("change", function () {
+    var file = importInput.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var incoming = JSON.parse(reader.result);
+        if (!Array.isArray(incoming)) throw new Error("not an array");
+        var known = {};
+        words.forEach(function (w) { known[w.id] = true; });
+        var added = 0;
+        incoming.forEach(function (w) {
+          if (w && w.id && w.word && w.tr && !known[w.id]) {
+            words.push(w);
+            known[w.id] = true;
+            added++;
+          }
+        });
+        words.sort(function (a, b) { return b.added - a.added; });
+        save();
+        render();
+        window.alert("Імпортовано нових слів: " + added);
+      } catch (e) {
+        window.alert("Не вдалося прочитати файл.");
+      }
+      importInput.value = "";
+    };
+    reader.readAsText(file);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

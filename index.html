@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Хорватська A1 → B1 · Огляд програми</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+<style>
+  .section-lead { color: var(--muted); max-width: 70ch; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .hero-stats span { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 4px 14px; font-weight: 600; }
+
+  .level-card { border-top: 5px solid var(--lvl); }
+  .level-card .lvl { display: inline-block; font-size: 1.6rem; font-weight: 800; color: var(--lvl); margin-right: 8px; }
+  .level-card ul { margin: .4em 0 0; padding-left: 1.2em; }
+  .level-card li { margin: .25em 0; }
+  .lvl-a1 { --lvl: #8a94a6; }
+  .lvl-a2 { --lvl: var(--c1); }
+  .lvl-b1 { --lvl: var(--c3); }
+
+  .roadmap { overflow-x: auto; }
+  .roadmap svg { display: block; min-width: 640px; width: 100%; height: auto; }
+  .roadmap a:hover rect.phase-block, .roadmap a:focus rect.phase-block { filter: brightness(1.08); }
+  .roadmap text { font-family: var(--font); }
+
+  .week-rhythm { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin: 12px 0 20px; }
+  .rday { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; font-size: .9rem; }
+  .rday b { display: block; font-size: 1rem; }
+  .rday small { color: var(--muted); display: block; line-height: 1.35; margin-top: 4px; }
+  .rday.review { background: #fff8e6; border-color: #f0d48a; }
+
+  .split-row { display: grid; grid-template-columns: 9.5em 1fr 3em; align-items: center; gap: 10px; margin: 8px 0; font-size: .95rem; }
+  .split-row .progress { height: 14px; }
+  .split-row .pct { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .daily { display: flex; width: 100%; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); margin: 14px 0 8px; }
+  .daily > div { padding: 12px 10px; color: #fff; min-width: 0; }
+  .daily b { display: block; font-size: 1.15rem; }
+  .daily span { display: block; font-size: .82rem; line-height: 1.3; opacity: .95; }
+  .d-vocab { background: var(--t-vocab); flex: 10; }
+  .d-grammar { background: var(--t-grammar); flex: 15; }
+  .d-input { background: var(--t-listen); flex: 20; }
+  .d-speak { background: var(--t-speak); flex: 15; }
+  .d-write { background: var(--t-write); flex: 10; }
+  .daily-scale { display: flex; justify-content: space-between; color: var(--muted); font-size: .8rem; }
+
+  .dash-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+  .phase-bars .phase-1, .phase-bars .phase-2, .phase-bars .phase-3 { margin: 10px 0; }
+  .phase-bars .row-label { display: flex; justify-content: space-between; font-size: .92rem; }
+  #overall-progress .progress { height: 18px; }
+  main > section { scroll-margin-top: 64px; }
+  #week-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; max-width: 720px; margin: 16px 0 10px; }
+  .week-cell { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; border-radius: 8px; font-weight: 700; font-size: .9rem; text-decoration: none; color: var(--text); border: 2px solid var(--accent); background: #fff; }
+  .week-cell.cell-phase-1 { --accent: var(--c1); }
+  .week-cell.cell-phase-2 { --accent: var(--c2); }
+  .week-cell.cell-phase-3 { --accent: var(--c3); }
+  .week-cell.cell-done { background: var(--accent); color: #fff; }
+  .week-cell.cell-partial { background: linear-gradient(135deg, var(--partial) 0 50%, #fff 50% 100%); }
+  .week-cell.cell-locked { background: var(--locked); border-style: dashed; border-color: #c3c9d4; color: #8a94a6; }
+  .week-cell:hover { outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .85rem; color: var(--muted); }
+  .legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 5px; border: 2px solid var(--c2); background: #fff; }
+  .legend .l-done { background: var(--c2); }
+  .legend .l-partial { background: linear-gradient(135deg, var(--partial) 0 50%, #fff 50% 100%); }
+  .legend .l-locked { background: var(--locked); border: 2px dashed #c3c9d4; }
+
+  .ff-table td:first-child { white-space: nowrap; }
+
+  @media (max-width: 640px) {
+    .week-rhythm { grid-template-columns: repeat(4, 1fr); }
+    #week-grid { grid-template-columns: repeat(6, 1fr); }
+    .daily { flex-direction: column; }
+    .daily > div { flex: none !important; }
+    .daily-scale { display: none; }
+    .split-row { grid-template-columns: 7.5em 1fr 2.8em; }
+  }
+  @media print {
+    .roadmap svg { min-width: 0; }
+    .week-cell, .daily > div, .week-rhythm .rday { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">Огляд</a>
+  <a href="phase-1.html">Етап 1 · A1→A2</a>
+  <a href="phase-2.html">Етап 2 · A2→B1.1</a>
+  <a href="phase-3.html">Етап 3 · B1</a>
+  <a href="grammar.html">Граматика</a>
+  <a href="vocab.html">Словник</a>
+  <a href="cards.html">Картки</a>
+  <a href="chat.html">AI-чат</a>
+</nav>
+
+<main class="container">
+
+  <!-- 1. Hero -->
+  <header class="hero">
+    <h1>Хорватська: від A1 до B1 за 36 тижнів</h1>
+    <p>Візуальна програма для україномовних. Ви вже маєте A1 — далі системно рухаємося до впевненого <strong>B1</strong>: говорити про своє життя, роботу й плани, розуміти новини та писати листи.</p>
+    <p><span class="hr">Polako, ali sigurno!</span> — <span>«Повільно, але впевнено!»</span></p>
+    <div class="hero-stats">
+      <span>36 тижнів · 3 етапи</span>
+      <span>60–75 хв на день</span>
+      <span>6 днів навчання + 1 день повторення</span>
+      <span>~600–700 → ~2500 слів</span>
+    </div>
+  </header>
+
+  <!-- 2. CEFR -->
+  <section id="levels">
+    <h2>Коротко про рівні CEFR</h2>
+    <p class="section-lead">Загальноєвропейська шкала (CEFR) описує рівні через «я можу…». Ось що це означає саме для хорватської.</p>
+    <div class="grid">
+      <article class="card level-card lvl-a1">
+        <h3><span class="lvl">A1</span>Старт (уже маєте)</h3>
+        <ul>
+          <li>Представитися: <span class="hr">Zovem se Olena, iz Ukrajine sam.</span></li>
+          <li>Прості питання й відповіді про себе, родину, місто.</li>
+          <li>Числа, ціни, час, дні тижня; замовити <span class="hr">kavu</span> чи <span class="hr">kruh</span>.</li>
+          <li>Теперішній час, базові відмінки в готових фразах.</li>
+        </ul>
+      </article>
+      <article class="card level-card lvl-a2">
+        <h3><span class="lvl">A2</span>Побут без стресу</h3>
+        <ul>
+          <li>Розповісти, що робили вчора: <span class="hr">Jučer sam bila u gradu.</span></li>
+          <li>Купівлі, лікар, транспорт (<span class="hr">vlak, autobus</span>), оренда житла.</li>
+          <li>Розуміти короткі оголошення, меню, прості листи.</li>
+          <li>Минулий і майбутній час, усі 7 відмінків в однині.</li>
+        </ul>
+      </article>
+      <article class="card level-card lvl-b1">
+        <h3><span class="lvl">B1</span>Самостійний користувач</h3>
+        <ul>
+          <li>Висловити думку й аргумент: <span class="hr">Mislim da je to dobra ideja jer…</span></li>
+          <li>Розуміти головне в новинах HRT і в розмові на знайомі теми.</li>
+          <li>Написати лист чи e-mail на 120–180 слів, розповісти історію.</li>
+          <li>Умовний спосіб, складні речення, вид дієслова, порядок клітик.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- 3. Roadmap -->
+  <section id="roadmap">
+    <h2>Дорожня карта: 36 тижнів</h2>
+    <p class="section-lead">Натисніть на етап, щоб відкрити його план. Ромби — контрольні точки (самоперевірка) наприкінці кожного етапу.</p>
+    <div class="card roadmap">
+      <svg viewBox="0 0 1080 210" role="img" aria-labelledby="roadmap-title">
+        <title id="roadmap-title">Шкала 36 тижнів: етап 1 — тижні 1–12, етап 2 — 13–24, етап 3 — 25–36</title>
+        <a href="phase-1.html">
+          <rect class="phase-block" x="36" y="70" width="334" height="56" rx="10" fill="#2e9d5b"/>
+          <text x="203" y="96" fill="#fff" font-size="17" font-weight="700" text-anchor="middle">Етап 1 · A1 → A2</text>
+          <text x="203" y="116" fill="#fff" font-size="13" text-anchor="middle">тижні 1–12 · побут, минулий час, відмінки</text>
+        </a>
+        <a href="phase-2.html">
+          <rect class="phase-block" x="372" y="70" width="334" height="56" rx="10" fill="#2f6fd6"/>
+          <text x="539" y="96" fill="#fff" font-size="17" font-weight="700" text-anchor="middle">Етап 2 · A2 → B1.1</text>
+          <text x="539" y="116" fill="#fff" font-size="13" text-anchor="middle">тижні 13–24 · майбутнє, кондиціонал, вид</text>
+        </a>
+        <a href="phase-3.html">
+          <rect class="phase-block" x="708" y="70" width="336" height="56" rx="10" fill="#7a4fd0"/>
+          <text x="876" y="96" fill="#fff" font-size="17" font-weight="700" text-anchor="middle">Етап 3 · B1</text>
+          <text x="876" y="116" fill="#fff" font-size="13" text-anchor="middle">тижні 25–36 · думка, тексти, підготовка до іспиту</text>
+        </a>
+        <!-- week ticks -->
+        <g stroke="#b6bdc9" stroke-width="1">
+          <line x1="36" y1="140" x2="1044" y2="140"/>
+          <line x1="36" y1="135" x2="36" y2="145"/>
+          <line x1="148" y1="136" x2="148" y2="144"/>
+          <line x1="260" y1="136" x2="260" y2="144"/>
+          <line x1="484" y1="136" x2="484" y2="144"/>
+          <line x1="596" y1="136" x2="596" y2="144"/>
+          <line x1="820" y1="136" x2="820" y2="144"/>
+          <line x1="932" y1="136" x2="932" y2="144"/>
+        </g>
+        <g fill="#5b6475" font-size="12" text-anchor="middle">
+          <text x="50" y="160">1</text>
+          <text x="148" y="160">4</text>
+          <text x="260" y="160">8</text>
+          <text x="484" y="160">16</text>
+          <text x="596" y="160">20</text>
+          <text x="820" y="160">28</text>
+          <text x="932" y="160">32</text>
+        </g>
+        <!-- milestones -->
+        <g>
+          <line x1="371" y1="40" x2="371" y2="140" stroke="#2e9d5b" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="361" y="130" width="20" height="20" transform="rotate(45 371 140)" fill="#fff" stroke="#2e9d5b" stroke-width="3"/>
+          <text x="371" y="30" fill="#2e9d5b" font-size="14" font-weight="700" text-anchor="middle">Тиждень 12 · рівень A2</text>
+          <text x="371" y="182" fill="#1d2330" font-size="12" text-anchor="middle">контрольна 1</text>
+
+          <line x1="707" y1="40" x2="707" y2="140" stroke="#2f6fd6" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="697" y="130" width="20" height="20" transform="rotate(45 707 140)" fill="#fff" stroke="#2f6fd6" stroke-width="3"/>
+          <text x="707" y="30" fill="#2f6fd6" font-size="14" font-weight="700" text-anchor="middle">Тиждень 24 · рівень B1.1</text>
+          <text x="707" y="182" fill="#1d2330" font-size="12" text-anchor="middle">контрольна 2</text>
+
+          <line x1="1043" y1="40" x2="1043" y2="140" stroke="#7a4fd0" stroke-width="2" stroke-dasharray="4 3"/>
+          <rect x="1033" y="130" width="20" height="20" transform="rotate(45 1043 140)" fill="#fff" stroke="#7a4fd0" stroke-width="3"/>
+          <text x="1050" y="30" fill="#7a4fd0" font-size="14" font-weight="700" text-anchor="end">Тиждень 36 · B1 🎯</text>
+          <text x="1050" y="182" fill="#1d2330" font-size="12" text-anchor="end">пробний іспит</text>
+        </g>
+        <text x="36" y="200" fill="#5b6475" font-size="12">Словник: ~650 → ~1300 → ~1900 → ~2500 слів</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 4. Weekly rhythm -->
+  <section id="rhythm">
+    <h2>Ритм тижня</h2>
+    <p class="section-lead">Кожен тиждень має одну граматичну тему й одну лексичну тему. Шість днів — нове, сьомий — повторення або відпочинок.</p>
+    <div class="week-rhythm">
+      <div class="rday"><b>Пн</b><small>нова граматика + лексика теми</small></div>
+      <div class="rday"><b>Вт</b><small>аудіювання, вправи</small></div>
+      <div class="rday"><b>Ср</b><small>говоріння, шедоуінг</small></div>
+      <div class="rday"><b>Чт</b><small>читання, нові слова з тексту</small></div>
+      <div class="rday"><b>Пт</b><small>письмо, корекція помилок</small></div>
+      <div class="rday"><b>Сб</b><small>інтеграція: діалог, міні-тест</small></div>
+      <div class="rday review"><b>Нд</b><small>повторення SRS або відпочинок</small></div>
+    </div>
+
+    <div class="card">
+      <h3>Розподіл часу за навичками</h3>
+      <div class="split-row"><span><span class="tag-grammar">Граматика</span></span><div class="progress"><div class="progress-bar" style="width:20%;background:var(--t-grammar)"></div></div><span class="pct">20%</span></div>
+      <div class="split-row"><span><span class="tag-vocab">Лексика</span></span><div class="progress"><div class="progress-bar" style="width:20%;background:var(--t-vocab)"></div></div><span class="pct">20%</span></div>
+      <div class="split-row"><span><span class="tag-listen">Аудіювання</span></span><div class="progress"><div class="progress-bar" style="width:20%;background:var(--t-listen)"></div></div><span class="pct">20%</span></div>
+      <div class="split-row"><span><span class="tag-speak">Говоріння</span></span><div class="progress"><div class="progress-bar" style="width:20%;background:var(--t-speak)"></div></div><span class="pct">20%</span></div>
+      <div class="split-row"><span><span class="tag-read">Читання</span></span><div class="progress"><div class="progress-bar" style="width:10%;background:var(--t-read)"></div></div><span class="pct">10%</span></div>
+      <div class="split-row"><span><span class="tag-write">Письмо</span></span><div class="progress"><div class="progress-bar" style="width:10%;background:var(--t-write)"></div></div><span class="pct">10%</span></div>
+      <p class="tip">Слов'янська основа дає вам перевагу в читанні, тому більше часу йде на слухання й говоріння — саме вони «відстають» у самоуків. На етапі 3 частка письма й читання зростає під формат іспиту.</p>
+    </div>
+  </section>
+
+  <!-- 5. Daily routine -->
+  <section id="daily">
+    <h2>Шаблон дня (60–75 хв)</h2>
+    <p class="section-lead">Ширина блоку пропорційна часу. Порядок важливий: спершу «розігрів» пам'яті, потім нове, наприкінці — активне використання.</p>
+    <div class="daily" role="img" aria-label="10 хв лексика SRS, 15 хв граматика, 20 хв аудіювання або читання, 15 хв говоріння, 10 хв письмо">
+      <div class="d-vocab"><b>10′</b><span>Лексика SRS (Anki): повторення + 8–10 нових слів</span></div>
+      <div class="d-grammar"><b>15′</b><span>Граматика: правило тижня, 10–15 речень</span></div>
+      <div class="d-input"><b>20′</b><span>Аудіювання / читання: короткий текст чи відео, 2 прослуховування</span></div>
+      <div class="d-speak"><b>15′</b><span>Говоріння: шедоуінг, відповіді вголос, запис себе</span></div>
+      <div class="d-write"><b>5–10′</b><span>Письмо: 5 речень або короткий абзац</span></div>
+    </div>
+    <div class="daily-scale"><span>0 хв</span><span>10</span><span>25</span><span>45</span><span>60</span><span>70</span></div>
+    <p class="warn">Якщо часу лише 30 хвилин — не пропускайте день: зробіть SRS (10′) + аудіювання (10′) + говоріння (10′). Регулярність важливіша за тривалість.</p>
+  </section>
+
+  <!-- 6. Dashboard -->
+  <section id="dashboard">
+    <div class="dash-head">
+      <h2>Мій прогрес</h2>
+      <button type="button" id="reset-progress">Скинути прогрес</button>
+    </div>
+    <div class="card">
+      <p><strong>Загалом</strong></p>
+      <div id="overall-progress"></div>
+      <p id="overall-label" class="uk">Прогрес з'явиться, щойно ви відкриєте сторінку етапу й позначите перше завдання.</p>
+
+      <div class="phase-bars">
+        <div class="phase-1">
+          <div class="row-label"><a href="phase-1.html">Етап 1 · A1→A2</a><span id="phase-label-1"></span></div>
+          <div id="phase-progress-1"></div>
+        </div>
+        <div class="phase-2">
+          <div class="row-label"><a href="phase-2.html">Етап 2 · A2→B1.1</a><span id="phase-label-2"></span></div>
+          <div id="phase-progress-2"></div>
+        </div>
+        <div class="phase-3">
+          <div class="row-label"><a href="phase-3.html">Етап 3 · B1</a><span id="phase-label-3"></span></div>
+          <div id="phase-progress-3"></div>
+        </div>
+      </div>
+
+      <div id="week-grid" aria-label="Сітка 36 тижнів"></div>
+      <div class="legend">
+        <span><i class="l-done"></i>виконано</span>
+        <span><i class="l-partial"></i>у процесі</span>
+        <span><i></i>не розпочато</span>
+        <span><i class="l-locked"></i>не відкрито (сторінку етапу ще не відкривали)</span>
+      </div>
+      <p class="uk">Прогрес зберігається лише в цьому браузері (localStorage). Рядок сітки = один етап, клітинка веде до свого тижня.</p>
+    </div>
+    <div class="card backup">
+      <h3>Резервна копія</h3>
+      <p>Один файл з усім збереженим: позначки завдань, тексти й нотатки із завдань, словник, прогрес карток, налаштування й історія AI-чату. Імпорт додає дані з файлу до наявних, нічого не видаляючи.</p>
+      <div class="backup-actions">
+        <button type="button" id="backup-export">Експорт усіх даних</button>
+        <button type="button" id="backup-import-btn">Імпорт</button>
+        <input type="file" id="backup-import" accept=".json,application/json" hidden>
+        <span id="backup-status" class="backup-status"></span>
+      </div>
+      <p class="warn">Аудіозаписи голосу в копію не входять — вони зберігаються окремо в цьому браузері. API-ключ AI-чату теж не експортується (з міркувань безпеки): після імпорту на новому пристрої введи його в чаті ще раз.</p>
+    </div>
+  </section>
+
+  <!-- 7. Tips for Ukrainian speakers -->
+  <section id="tips">
+    <h2>Поради для україномовних</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Що буде легко ✓</h3>
+        <ul>
+          <li><strong>Спільна лексика:</strong> <span class="hr">voda, sestra, brat, kuća, ruka, zima, zapamtiti</span> (запам'ятати), <span class="hr">pitati</span> (питати).</li>
+          <li><strong>7 відмінків</strong>, як в українській, включно з кличним: <span class="hr">Ivane! Mama, dođi!</span></li>
+          <li><strong>Вид дієслова:</strong> <span class="hr">pisati / napisati</span> = писати / написати.</li>
+          <li><strong>Фонетичне письмо:</strong> читаємо як пишемо; <span class="hr">č ć dž đ lj nj š ž</span> — нові лише за формою.</li>
+          <li>Назви місяців — слов'янські (але див. пастки нижче).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Що буде складно !</h3>
+        <ul>
+          <li><strong>Клітики на 2-й позиції</strong> і їхній порядок: <span class="hr">li → sam/si… → dativ → akuzativ → se → je</span>. <span class="hr">Jesi li mu ga dao?</span> · <span class="hr">Sviđa mi se.</span></li>
+          <li><strong>Минулий час з допоміжним дієсловом:</strong> <span class="hr">Ja sam čitao</span>, а не «ja čitao».</li>
+          <li><strong>Майбутній:</strong> <span class="hr">čitat ću</span> / <span class="hr">ću čitati</span> — правопис залежить від порядку.</li>
+          <li><strong>Ijekavica:</strong> <span class="hr">mlijeko, lijep, vrijeme, dijete</span>, але <span class="hr">djeca, rječnik</span>.</li>
+          <li><strong>Наголос і тони</strong> (4 наголоси): для B1 не обов'язкові — копіюйте аудіо, не зубріть правила.</li>
+          <li><strong>Саме хорватська норма:</strong> <span class="hr">kruh, tisuća, vlak, kava, tjedan, tko, što</span> — не сербські <span class="uk">hleb, hiljada, voz, kafa, nedelja, ko, šta</span>; <span class="hr">moram ići</span>, а не «moram da idem».</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Фальшиві друзі перекладача</h3>
+    <p class="false-friend">Схоже звучить — інше значення. Записуйте такі слова в Anki окремою колодою з поміткою «≠».</p>
+    <table class="ref ff-table">
+      <thead><tr><th>Хорватською</th><th>Означає</th><th>Не плутати з українським…</th></tr></thead>
+      <tbody>
+        <tr><td class="hr">čas</td><td>мить, момент (<span class="hr">za čas</span> — вмить)</td><td>«час» = <span class="hr">vrijeme</span></td></tr>
+        <tr><td class="hr">pozor!</td><td>увага! обережно!</td><td>«позор» (ганьба) = <span class="hr">sramota</span></td></tr>
+        <tr><td class="hr">godina</td><td>рік</td><td>«година» = <span class="hr">sat</span></td></tr>
+        <tr><td class="hr">rok</td><td>термін, строк (<span class="hr">rok trajanja</span> — термін придатності)</td><td>«рік» = <span class="hr">godina</span></td></tr>
+        <tr><td class="hr">stan</td><td>квартира</td><td>«стан» = <span class="hr">stanje</span></td></tr>
+        <tr><td class="hr">grad</td><td>місто</td><td>«град» (опади) = <span class="hr">tuča</span></td></tr>
+        <tr><td class="hr">slovo</td><td>літера</td><td>«слово» = <span class="hr">riječ</span></td></tr>
+        <tr><td class="hr">trudna</td><td>вагітна</td><td>«трудний» = <span class="hr">težak</span></td></tr>
+        <tr><td class="hr">brak</td><td>шлюб</td><td>«брак» (нестача, дефект) = <span class="hr">nedostatak</span>, <span class="hr">škart</span></td></tr>
+        <tr><td class="hr">jagoda</td><td>полуниця</td><td>«ягода» = <span class="hr">bobica</span></td></tr>
+        <tr><td class="hr">lipanj · srpanj</td><td>червень · липень</td><td>«липень», «серпень» — на місяць зсунуті!</td></tr>
+        <tr><td class="hr">listopad · studeni</td><td>жовтень · листопад</td><td>«листопад» = <span class="hr">studeni</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 8. Resources -->
+  <section id="resources">
+    <h2>Ресурси</h2>
+    <p class="section-lead">Лише перевірені, реально наявні джерела. Посилань навмисно немає — шукайте за назвою.</p>
+    <div class="grid">
+      <div class="card">
+        <h3><span class="tag-read">Підручники</span></h3>
+        <ul>
+          <li><strong>Hrvatski za početnike 1 і 2</strong> — серія Croaticum (Загреб), A1–A2.</li>
+          <li><strong>Colloquial Croatian</strong> (Routledge) — діалоги + аудіо.</li>
+          <li><strong>Complete Croatian</strong> (Teach Yourself) — курс з аудіо до ~B1.</li>
+          <li>Ronelle Alexander, <strong>Bosnian, Croatian, Serbian: A Grammar with Sociolinguistic Commentary</strong> — довідник з граматики.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag-listen">Аудіо й відео</span></h3>
+        <ul>
+          <li><strong>HRT</strong> — телеканали HRT 1/2, радіо HR 1/2, платформа <strong>HRTi</strong>; новини <span class="hr">Dnevnik</span>.</li>
+          <li>Хорватська музика з текстами: клапа (<span class="hr">klapa</span>), Oliver Dragojević, Gibonni.</li>
+          <li>Новинні сайти для читання: Index.hr, Večernji list, Jutarnji list.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag-vocab">Лексика та словники</span></h3>
+        <ul>
+          <li><strong>Anki</strong> — інтервальне повторення (SRS), 15–20 хв/день максимум.</li>
+          <li><strong>Hrvatski jezični portal</strong> (HJP) — тлумачний словник хорватської.</li>
+          <li><strong>Wiktionary</strong> — відмінювання та наголоси.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag-speak">Живе спілкування</span></h3>
+        <ul>
+          <li>Репетитори: <strong>italki</strong>, <strong>Preply</strong> — 1–2 заняття на тиждень з етапу 2.</li>
+          <li>Мовний обмін: <strong>Tandem</strong>, <strong>HelloTalk</strong>.</li>
+          <li><strong>Croaticum</strong> (Filozofski fakultet, Sveučilište u Zagrebu) — курси та іспити з хорватської як іноземної за рівнями CEFR; орієнтир для B1 (актуальні дати — на їхньому сайті).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Self-assessment -->
+  <section id="self-assess">
+    <h2>Як перевірити, що ви на B1</h2>
+    <div class="milestone">
+      <h3>Тиждень 36: пробний іспит у 4 навичках</h3>
+      <ol>
+        <li><span class="tag-listen">Аудіювання</span> Новинний сюжет HRT (2–3 хв): перекажіть головне й 3 деталі українською.</li>
+        <li><span class="tag-read">Читання</span> Статтю з новинного сайту (~400 слів) зрозуміли без словника на 70%+.</li>
+        <li><span class="tag-write">Письмо</span> E-mail або лист 120–180 слів (скарга, запит, запрошення) за 30 хв — перевірте з репетитором.</li>
+        <li><span class="tag-speak">Говоріння</span> Запишіть 2–3-хвилинний монолог на тему <span class="hr">Moj posao i planovi za budućnost</span> + діалог-рольову гру. Без довгих пауз і з минулим, майбутнім і умовним способом.</li>
+      </ol>
+      <p class="tip">Орієнтир: ≥ 60% у кожній навичці, словник Anki ~2500 слів, і ви можете 10 хвилин говорити з носієм на знайому тему. Офіційне підтвердження — іспит Croaticum.</p>
+    </div>
+    <details>
+      <summary>Чекліст «я можу…» рівня B1</summary>
+      <ul>
+        <li>Розповісти про досвід, події, мрії: <span class="hr">Kad sam bio mlađi, živio sam u Kijevu.</span></li>
+        <li>Пояснити причину та план: <span class="hr">Ne mogu doći jer moram raditi.</span></li>
+        <li>Висловити припущення й побажання: <span class="hr">Kad bih imao više vremena, putovao bih.</span></li>
+        <li>Впоратися з більшістю ситуацій у подорожі, у лікаря, в установі.</li>
+        <li>Зрозуміти головне в серіалі чи подкасті на побутову тему.</li>
+        <li>Написати зв'язний текст про знайому тему з використанням <span class="hr">koji, jer, ako, iako, dok</span>.</li>
+      </ul>
+    </details>
+  </section>
+
+</main>
+</body>
+</html>

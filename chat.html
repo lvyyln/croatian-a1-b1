@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-чат · хорватська</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+<script src="course-data.js"></script>
+<script src="vocab-data.js"></script>
+<style>
+  .chat-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; margin: 18px 0 10px; }
+  .chat-head h1 { margin: 0; font-size: 1.7rem; }
+  .chat-head p { margin: 0; color: var(--muted); font-size: .92rem; }
+  .chat-panel { padding: 0 14px; }
+  .chat-panel > summary { font-size: .95rem; }
+  .chat-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 14px; margin: 4px 0 10px; }
+  .chat-form label { display: flex; flex-direction: column; gap: 4px; font-size: .88rem; color: var(--muted); min-width: 0; }
+  .chat-form input, .chat-form select, .chat-bar select {
+    font: inherit; font-size: .95rem; padding: 7px 10px; min-width: 0;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text);
+  }
+  .chat-form input:focus, .chat-form select:focus, .chat-bar select:focus, .composer textarea:focus {
+    outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; border-color: var(--accent);
+  }
+  .chat-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0 4px; }
+  .chat-actions button, .chat-bar button { padding: 6px 14px; font-size: .9rem; }
+  .chat-status { font-size: .88rem; color: var(--muted); }
+  .chat-status.ok { color: var(--done); }
+  .chat-status.err { color: #b42318; }
+  .chat-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .chat-primary:hover { filter: brightness(1.08); }
+  .chat-primary:disabled { opacity: .55; cursor: default; filter: none; }
+  .chat-warn { margin: 6px 0 10px; font-size: .88rem; }
+  .chat-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0; padding: 10px 14px; }
+  .chat-bar label { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; color: var(--muted); min-width: 0; max-width: 100%; }
+  .chat-bar select { max-width: 16em; text-overflow: ellipsis; }
+  .chat-bar .spacer { flex: 1; }
+  .chat-auto { font-size: .8rem; color: var(--muted); }
+  .chat-topic { margin: 0 0 10px; font-size: .92rem; color: var(--muted); }
+  .chat-topic b { color: var(--text); }
+  .chat-ctx {
+    display: flex; align-items: flex-start; gap: 10px; margin: 0 0 12px; padding: 8px 12px;
+    border-radius: 10px; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); font-size: .9rem;
+  }
+  .chat-ctx .ctx-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .chat-ctx .ctx-title { font-weight: 700; color: var(--accent); }
+  .chat-ctx button { padding: 2px 10px; font-size: .8rem; }
+  .chat-prompt pre {
+    margin: 0 0 4px; padding: 10px 12px; max-height: 26em; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere;
+    font-family: var(--mono); font-size: .8rem; line-height: 1.5; background: #f6f7f9; border-radius: 8px; color: var(--text);
+  }
+  .chat-log { display: flex; flex-direction: column; gap: 12px; margin: 14px 0; min-height: 30vh; }
+  .chat-empty { margin: auto 0; text-align: center; color: var(--muted); font-size: .95rem; }
+  .msg { display: flex; flex-direction: column; max-width: 85%; min-width: 0; }
+  .msg-user { align-self: flex-end; align-items: flex-end; }
+  .msg-assistant, .msg-error { align-self: flex-start; }
+  .bubble {
+    padding: 10px 14px; border-radius: 14px; line-height: 1.55; overflow-wrap: anywhere; min-width: 0;
+    background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow);
+  }
+  .msg-user .bubble { background: var(--accent); border-color: var(--accent); color: #fff; border-bottom-right-radius: 4px; white-space: pre-wrap; }
+  .msg-assistant .bubble { border-bottom-left-radius: 4px; }
+  .msg-error .bubble { background: #fdecec; border-color: #f0c4c0; color: #7a1a12; }
+  .bubble p { margin: 0 0 .55em; }
+  .bubble p:last-child, .bubble ul:last-child, .bubble ol:last-child { margin-bottom: 0; }
+  .bubble ul, .bubble ol { margin: .2em 0 .55em; padding-left: 1.3em; }
+  .bubble li { margin: .15em 0; }
+  .say {
+    display: inline-flex; align-items: center; justify-content: center; margin-left: 4px; padding: 0 4px; border: 0;
+    background: none; font-size: .9em; line-height: 1.2; vertical-align: baseline; border-radius: 6px; opacity: .65;
+  }
+  .say:hover, .say:focus { opacity: 1; background: var(--accent-soft); }
+  .msg-tools { display: flex; gap: 6px; margin-top: 4px; }
+  .msg-tools button { padding: 1px 10px; font-size: .78rem; color: var(--muted); border-radius: 999px; }
+  .typing { display: inline-flex; gap: 4px; padding: 4px 2px; }
+  .typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: chat-dot 1s infinite ease-in-out; }
+  .typing span:nth-child(2) { animation-delay: .15s; }
+  .typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes chat-dot { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+  .composer {
+    position: sticky; bottom: 0; z-index: 5; display: flex; gap: 8px; align-items: flex-end;
+    padding: 10px 0 12px; background: var(--bg);
+  }
+  .composer textarea {
+    flex: 1; min-width: 0; min-height: 3em; max-height: 40vh; padding: 9px 12px; resize: vertical;
+    font: inherit; line-height: 1.5; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .composer .hint { display: block; font-size: .75rem; color: var(--muted); margin-top: 2px; }
+  .composer-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .sel-bar {
+    position: absolute; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; max-width: min(420px, 92vw);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow);
+  }
+  .sel-bar button { padding: 3px 10px; font-size: .82rem; }
+  .sel-bar input { flex: 1 1 120px; min-width: 0; padding: 4px 8px; font: inherit; font-size: .85rem; border: 1px solid var(--border); border-radius: 8px; }
+  .sel-bar .sel-msg { font-size: .8rem; color: var(--done); }
+  .tts-hint { margin: 0 0 12px; }
+  @media (max-width: 640px) {
+    .chat-head h1 { font-size: 1.4rem; }
+    .msg { max-width: 94%; }
+    .chat-bar { padding: 8px 10px; }
+    .chat-bar .spacer { display: none; }
+    .chat-bar select { max-width: calc(100vw - 140px); }
+    .composer .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">Огляд</a>
+  <a href="phase-1.html">Етап 1 · A1→A2</a>
+  <a href="phase-2.html">Етап 2 · A2→B1.1</a>
+  <a href="phase-3.html">Етап 3 · B1</a>
+  <a href="grammar.html">Граматика</a>
+  <a href="vocab.html">Словник</a>
+  <a href="cards.html">Картки</a>
+  <a href="chat.html">AI-чат</a>
+</nav>
+
+<main class="container">
+
+<header class="chat-head">
+  <h1>AI-репетитор</h1>
+  <p>Розмова, рольові ігри, перевірка текстів і граматика — з урахуванням твого тижня.</p>
+</header>
+
+<details class="chat-panel" id="settings-panel">
+  <summary>⚙️ Налаштування AI-провайдера <span class="chat-status" id="settings-summary"></span></summary>
+  <div class="warn chat-warn">
+    Ключ API зберігається <b>лише в localStorage цього браузера</b> (на цьому комп'ютері) і нікуди більше не надсилається, крім обраного провайдера.
+    Запити йдуть <b>напряму з браузера до провайдера</b>, без жодного сервера-посередника.
+    Усі витрати за використання API — <b>на твоєму акаунті провайдера</b>. Не користуйся цією сторінкою на чужому комп'ютері.
+  </div>
+  <form class="chat-form" id="settings-form" autocomplete="off">
+    <label>Провайдер
+      <select id="s-provider">
+        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="openai">OpenAI</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="custom">OpenAI-сумісний (OpenRouter, локальний сервер…)</option>
+      </select>
+    </label>
+    <label id="s-baseurl-wrap" hidden>Базова адреса API
+      <input id="s-baseurl" type="url" placeholder="https://openrouter.ai/api/v1" spellcheck="false">
+    </label>
+    <label>Ключ API
+      <input id="s-key" type="password" placeholder="sk-…" spellcheck="false" autocomplete="off">
+    </label>
+    <label>Модель
+      <input id="s-model" type="text" spellcheck="false">
+    </label>
+  </form>
+  <div class="chat-actions">
+    <button type="button" class="chat-primary" id="s-save">Зберегти</button>
+    <button type="button" id="s-test">Перевірити з'єднання</button>
+    <span class="chat-status" id="s-status" role="status"></span>
+  </div>
+</details>
+
+<div class="card chat-bar">
+  <label>Режим
+    <select id="c-mode">
+      <option value="free">Вільна розмова</option>
+      <option value="roleplay">Рольова гра</option>
+      <option value="check">Перевір мій текст</option>
+      <option value="grammar">Поясни граматику</option>
+      <option value="task">Допомога із завданням</option>
+    </select>
+  </label>
+  <label>Тиждень
+    <select id="c-week"></select>
+  </label>
+  <span class="chat-auto" id="c-auto"></span>
+  <span class="spacer"></span>
+  <button type="button" id="c-new">Нова розмова</button>
+</div>
+
+<p class="chat-topic" id="c-topic"></p>
+
+<div class="chat-ctx" id="c-ctx" hidden>
+  <div class="ctx-body"><span class="ctx-title">Завдання:</span> <span id="c-ctx-text"></span></div>
+  <button type="button" id="c-ctx-clear" title="Прибрати контекст завдання">✕</button>
+</div>
+
+<details class="chat-prompt" id="prompt-panel">
+  <summary>🧠 Що знає AI (системний промпт, лише перегляд)</summary>
+  <pre id="prompt-preview"></pre>
+</details>
+
+<div class="ws-hint tts-hint" id="tts-hint" hidden>Немає хорватського голосу: відкрий сайт у Microsoft Edge або встанови хорватську мову в Windows (Settings → Time &amp; language → Speech)</div>
+
+<div class="chat-log" id="chat-log" aria-live="polite"></div>
+
+<form class="composer" id="composer">
+  <div class="composer-main">
+    <textarea id="c-input" rows="2" placeholder="Napiši poruku… / Напиши повідомлення…"></textarea>
+    <span class="hint">Enter — надіслати · Shift+Enter — новий рядок · виділи слово у відповіді, щоб озвучити або додати в словник</span>
+  </div>
+  <button type="submit" class="chat-primary" id="c-send">Надіслати</button>
+</form>
+
+</main>
+
+<script>
+// AI-репетитор: прямі запити з браузера до Anthropic / OpenAI / Gemini / OpenAI-сумісного API
+(function () {
+  "use strict";
+
+  var SETTINGS_KEY = "hr-ai-settings";
+  var CHAT_KEY = "hr-chat";
+  var CTX_KEY = "hr-chat-ctx";
+  var VOCAB_KEY = "hr-vocab";
+  var WEEKS = 36;
+  var HISTORY_LIMIT = 40;
+  var DEFAULT_MODELS = { anthropic: "claude-sonnet-5-5", openai: "", gemini: "", custom: "" };
+  var PROVIDER_NAMES = { anthropic: "Anthropic", openai: "OpenAI", gemini: "Google Gemini", custom: "OpenAI-сумісний сервер" };
+
+  var MODE_LABELS = {
+    free: "Вільна розмова",
+    roleplay: "Рольова гра",
+    check: "Перевір мій текст",
+    grammar: "Поясни граматику",
+    task: "Допомога із завданням"
+  };
+
+  // ---------- Storage ----------
+  function rawGet(key) {
+    try { return window.localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function rawSet(key, value) {
+    try { window.localStorage.setItem(key, value); return true; } catch (e) { return false; }
+  }
+  function rawRemove(key) {
+    try { window.localStorage.removeItem(key); } catch (e) { /* storage unavailable */ }
+  }
+  function readJson(key, fallback) {
+    try {
+      var raw = rawGet(key);
+      var v = raw ? JSON.parse(raw) : null;
+      return v && typeof v === "object" ? v : fallback;
+    } catch (e) { return fallback; }
+  }
+
+  function loadSettings() {
+    var s = readJson(SETTINGS_KEY, {});
+    return {
+      provider: PROVIDER_NAMES[s.provider] ? s.provider : "anthropic",
+      baseUrl: typeof s.baseUrl === "string" ? s.baseUrl : "",
+      keys: s.keys && typeof s.keys === "object" ? s.keys : {},
+      models: s.models && typeof s.models === "object" ? s.models : {}
+    };
+  }
+
+  function activeConfig(settings) {
+    var p = settings.provider;
+    var model = settings.models[p] || DEFAULT_MODELS[p];
+    return { provider: p, key: (settings.keys[p] || "").trim(), model: (model || "").trim(), baseUrl: (settings.baseUrl || "").trim() };
+  }
+
+  function configProblem(cfg) {
+    if (cfg.provider === "custom" && !/^https?:\/\//i.test(cfg.baseUrl)) return "Вкажи базову адресу API (http(s)://…).";
+    if (cfg.provider !== "custom" && !cfg.key) return "Вкажи ключ API.";
+    if (!cfg.model) return "Вкажи модель (назву з документації провайдера).";
+    return "";
+  }
+
+  // ---------- Progress & course ----------
+  function detectWeek() {
+    var max = 0;
+    var re = /^hr-b1:w(\d+)-t\d+$/;
+    try {
+      for (var i = 0; i < window.localStorage.length; i++) {
+        var k = window.localStorage.key(i);
+        var m = k ? re.exec(k) : null;
+        if (m && window.localStorage.getItem(k) === "1") {
+          var n = parseInt(m[1], 10);
+          if (n > max && n <= WEEKS) max = n;
+        }
+      }
+    } catch (e) { /* storage unavailable */ }
+    return max || 1;
+  }
+
+  function courseWeeks() {
+    return window.HR_COURSE && window.HR_COURSE.weeks ? window.HR_COURSE.weeks : {};
+  }
+
+  function phaseOfWeek(n) {
+    if (n <= 12) return 1;
+    if (n <= 24) return 2;
+    return 3;
+  }
+
+  var LEVELS = { 1: "A1 → A2", 2: "A2 → B1.1", 3: "B1" };
+
+  function weekInfo(n) {
+    var w = courseWeeks()[String(n)] || {};
+    var phase = w.phase || phaseOfWeek(n);
+    return { week: n, phase: phase, level: LEVELS[phase], title: w.title || "", titleHr: w.titleHr || "", grammar: w.grammar || "" };
+  }
+
+  function weekVocab(n) {
+    var all = window.HR_VOCAB;
+    var list = all && all[String(n)];
+    return Array.isArray(list) ? list : [];
+  }
+
+  function personalVocab(limit) {
+    var raw = rawGet(VOCAB_KEY);
+    var list;
+    try { list = raw ? JSON.parse(raw) : []; } catch (e) { list = []; }
+    if (!Array.isArray(list)) return [];
+    list = list.filter(function (w) { return w && w.word; });
+    list.sort(function (a, b) { return (b.added || 0) - (a.added || 0); });
+    return list.slice(0, limit);
+  }
+
+  // ---------- System prompt ----------
+  var MODE_PROMPTS = {
+    free:
+      "MODE: Free conversation.\n" +
+      "- Chat naturally in Croatian at the learner's current level, preferably about this week's topic or the learner's life.\n" +
+      "- Keep each reply short (2-5 sentences) and always end with a question back to the learner.\n" +
+      "- If the learner's last message has mistakes, add at the end a short block that starts with the line \"**Виправлення:**\" listing each error as \"- wrong → correct — коротке пояснення українською\". If there are no mistakes, write \"**Виправлення:** помилок немає 👍\".",
+    roleplay:
+      "MODE: Role-play.\n" +
+      "- Invent a realistic everyday scenario based on this week's topic (e.g. shop, doctor, landlord, office). In your first reply describe the situation and the learner's goal in one or two Ukrainian sentences, then start the scene in Croatian.\n" +
+      "- Stay in character as the counterpart; speak only Croatian inside the scene, at the learner's level.\n" +
+      "- After each learner turn, add a brief \"**Виправлення:**\" block (Ukrainian explanations) only if there were mistakes.\n" +
+      "- When the learner's goal is reached or the learner asks to stop, end the scene and give short feedback in Ukrainian: what went well, 2-3 things to practise, useful phrases.",
+    check:
+      "MODE: Check my writing.\n" +
+      "For every text the learner sends, answer with exactly these parts:\n" +
+      "1. \"**Виправлений текст:**\" — the full corrected Croatian text (keep the learner's meaning and style, fix only what is wrong or very unnatural).\n" +
+      "2. \"**Помилки:**\" — a list, each item \"- wrong → correct — пояснення українською (which rule)\".\n" +
+      "3. \"**Оцінка:**\" — a score out of 10 relative to the learner's current level (not native level), with one sentence why.\n" +
+      "4. \"**Порада:**\" — one concrete tip for next time.\n" +
+      "If the text is not in Croatian, ask the learner to write it in Croatian first.",
+    grammar:
+      "MODE: Explain grammar.\n" +
+      "- Explain the requested grammar point in Ukrainian, simply and step by step, compare with Ukrainian where helpful.\n" +
+      "- Give 3-5 short Croatian example sentences at the learner's level, each on its own line with a Ukrainian translation.\n" +
+      "- End with 2-3 mini exercises in Croatian; when the learner answers, check them.\n" +
+      "- If the learner does not name a topic, offer to explain this week's grammar focus.",
+    task:
+      "MODE: Help with a course task.\n" +
+      "- Help the learner complete the task below. Do NOT just give the full solution: give hints, check their attempt, explain mistakes in Ukrainian.\n" +
+      "- If the learner already wrote an answer, review it like a teacher: corrected version, list of errors with Ukrainian explanations, then what to improve.\n" +
+      "- Give the full model answer only if the learner explicitly asks for it."
+  };
+
+  function buildSystemPrompt(opts) {
+    var info = weekInfo(opts.week);
+    var weeks = courseWeeks();
+    var covered = [];
+    for (var n = 1; n < opts.week; n++) {
+      var w = weeks[String(n)];
+      if (w && w.grammar) covered.push("week " + n + ": " + w.grammar);
+    }
+    var lines = [];
+    lines.push("You are a friendly, patient Croatian language tutor built into the learner's self-study website.");
+    lines.push("");
+    lines.push("LEARNER");
+    lines.push("- Native language: Ukrainian. All explanations, corrections and grammar notes must be in Ukrainian.");
+    lines.push("- Goal: Croatian A1 → B1 in a 36-week self-study programme (phase 1 weeks 1-12: A1 → A2; phase 2 weeks 13-24: A2 → B1.1; phase 3 weeks 25-36: B1).");
+    lines.push("- Now: week " + info.week + " of 36, phase " + info.phase + " (" + info.level + ").");
+    lines.push("");
+    lines.push("LANGUAGE RULES");
+    lines.push("- Reply mainly in Croatian at the learner's current level; add Ukrainian explanations or translations where the learner may not understand.");
+    lines.push("- Use only standard Croatian (ijekavica: mlijeko, vrijeme, djevojka, lijep). Never use Serbian or ekavian forms: write \"je li\" not \"da li\", \"tisuća\" not \"hiljada\", \"vlak\" not \"voz\", \"tko/što\" not \"ko/šta\", \"kruh\" not \"hleb\", \"tjedan\" not \"nedelja/sedmica\", \"liječnik\" not \"lekar\". Prefer the infinitive (\"želim ići\") over \"da + present\" (\"želim da idem\").");
+    lines.push("- Point out Ukrainian-Croatian false friends whenever they come up (e.g. život = життя, not живіт; godina = рік, not година; stolica = стілець, not столиця; trudna = вагітна; magazin = журнал, not магазин).");
+    lines.push("- Stay within vocabulary and grammar the learner has covered so far; if you must use something new, gloss it in Ukrainian in brackets.");
+    lines.push("- Put Croatian sentences on their own lines where practical (the site reads Croatian lines aloud).");
+    lines.push("- Formatting: plain text only. You may use **bold**, line breaks and simple lists (\"- \" or \"1. \"). No headings, tables, code blocks or links.");
+    lines.push("- Be concise: usually under 150 words unless the learner asks for more.");
+    lines.push("");
+    lines.push("COURSE CONTEXT");
+    lines.push("- This week's topic: " + (info.title || "—") + (info.titleHr ? " (" + info.titleHr + ")" : ""));
+    lines.push("- This week's grammar focus: " + (info.grammar || "—"));
+    lines.push("- Grammar covered in earlier weeks: " + (covered.length ? covered.join("; ") : "none yet (absolute beginner)"));
+
+    var wv = opts.weekVocab || [];
+    if (wv.length) {
+      lines.push("- This week's vocabulary (Croatian — Ukrainian): " + wv.map(function (x) { return x.hr + " — " + x.uk; }).join("; "));
+    }
+    var pv = opts.personalVocab || [];
+    if (pv.length) {
+      lines.push("- Learner's personal dictionary, most recent first (reuse these words): " +
+        pv.map(function (x) { return x.word + (x.tr ? " — " + x.tr : ""); }).join("; "));
+    }
+    lines.push("");
+    lines.push(MODE_PROMPTS[opts.mode] || MODE_PROMPTS.free);
+
+    var ctx = opts.ctx;
+    if (opts.mode === "task" && ctx) {
+      lines.push("");
+      lines.push("TASK CONTEXT (from the course page" + (ctx.week ? ", week " + ctx.week : "") + ")");
+      if (ctx.taskText) lines.push("Task: " + ctx.taskText);
+      if (ctx.refText) lines.push("Reference material for the task:\n" + ctx.refText);
+      if (ctx.answer) lines.push("Learner's current answer/notes:\n" + ctx.answer);
+    } else if (opts.mode === "task") {
+      lines.push("");
+      lines.push("No task context was passed; ask the learner to paste the task text.");
+    }
+    return lines.join("\n");
+  }
+
+  // ---------- Provider requests ----------
+  // messages: [{role: "user"|"assistant", text}] -> merged so roles alternate and history starts with the user.
+  function normalizeMessages(messages) {
+    var out = [];
+    for (var i = 0; i < messages.length; i++) {
+      var m = messages[i];
+      if (!m || (m.role !== "user" && m.role !== "assistant") || !m.text) continue;
+      if (!out.length && m.role !== "user") continue;
+      var last = out[out.length - 1];
+      if (last && last.role === m.role) last.text += "\n\n" + m.text;
+      else out.push({ role: m.role, text: m.text });
+    }
+    return out;
+  }
+
+  function customUrl(baseUrl) {
+    var base = baseUrl.replace(/\/+$/, "");
+    return /\/chat\/completions$/i.test(base) ? base : base + "/chat/completions";
+  }
+
+  function buildRequest(cfg, system, messages) {
+    var msgs = normalizeMessages(messages);
+    if (cfg.provider === "anthropic") {
+      return {
+        url: "https://api.anthropic.com/v1/messages",
+        init: {
+          method: "POST",
+          headers: {
+            "x-api-key": cfg.key,
+            "anthropic-version": "2023-06-01",
+            "anthropic-dangerous-direct-browser-access": "true",
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            model: cfg.model,
+            max_tokens: 1024,
+            system: system,
+            messages: msgs.map(function (m) { return { role: m.role, content: m.text }; })
+          })
+        }
+      };
+    }
+    if (cfg.provider === "gemini") {
+      var model = cfg.model.replace(/^models\//, "");
+      return {
+        url: "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent",
+        init: {
+          method: "POST",
+          headers: { "x-goog-api-key": cfg.key, "content-type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: system }] },
+            contents: msgs.map(function (m) { return { role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.text }] }; })
+          })
+        }
+      };
+    }
+    var headers = { "content-type": "application/json" };
+    if (cfg.key) headers.Authorization = "Bearer " + cfg.key;
+    return {
+      url: cfg.provider === "custom" ? customUrl(cfg.baseUrl) : "https://api.openai.com/v1/chat/completions",
+      init: {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          model: cfg.model,
+          messages: [{ role: "system", content: system }].concat(msgs.map(function (m) { return { role: m.role, content: m.text }; }))
+        })
+      }
+    };
+  }
+
+  function parseResponse(provider, data) {
+    var text = "";
+    if (provider === "anthropic") {
+      var blocks = data && Array.isArray(data.content) ? data.content : [];
+      text = blocks.filter(function (b) { return b && b.type === "text"; }).map(function (b) { return b.text; }).join("");
+    } else if (provider === "gemini") {
+      var cand = data && data.candidates && data.candidates[0];
+      var parts = cand && cand.content && Array.isArray(cand.content.parts) ? cand.content.parts : [];
+      text = parts.map(function (p) { return p && p.text ? p.text : ""; }).join("");
+      if (!text && data && data.promptFeedback && data.promptFeedback.blockReason) {
+        throw new Error("Gemini заблокував запит (" + data.promptFeedback.blockReason + ").");
+      }
+    } else {
+      var choice = data && data.choices && data.choices[0];
+      var content = choice && choice.message ? choice.message.content : "";
+      if (Array.isArray(content)) content = content.map(function (c) { return c && c.text ? c.text : ""; }).join("");
+      text = typeof content === "string" ? content : "";
+    }
+    text = (text || "").trim();
+    if (!text) throw new Error("Провайдер повернув порожню відповідь.");
+    return text;
+  }
+
+  function providerMessage(data) {
+    if (!data || typeof data !== "object") return "";
+    var e = Array.isArray(data) ? data[0] && data[0].error : data.error;
+    if (typeof e === "string") return e;
+    if (e && typeof e.message === "string") return e.message;
+    if (typeof data.message === "string") return data.message;
+    return "";
+  }
+
+  function describeHttpError(status, data, rawText) {
+    var msg = providerMessage(data) || (rawText || "").slice(0, 300);
+    var hint;
+    if (status === 401) hint = "Ключ API недійсний або відкликаний. Перевір ключ у налаштуваннях.";
+    else if (status === 403) hint = "Доступ заборонено: ключ не має прав на цю модель/API або API не ввімкнено для проєкту.";
+    else if (status === 404) hint = "Не знайдено: перевір назву моделі (і базову адресу для OpenAI-сумісного сервера).";
+    else if (status === 400) hint = "Некоректний запит — найчастіше неправильна назва моделі або параметр.";
+    else if (status === 402) hint = "Потрібна оплата: на акаунті провайдера закінчилися кошти.";
+    else if (status === 429) hint = "Забагато запитів або вичерпано квоту/баланс. Зачекай або перевір баланс акаунта.";
+    else if (status === 529 || status === 503) hint = "Провайдер перевантажений. Спробуй трохи пізніше.";
+    else if (status >= 500) hint = "Помилка на боці провайдера. Спробуй пізніше.";
+    else hint = "Запит не вдався.";
+    return "HTTP " + status + ": " + hint + (msg ? "\nПовідомлення провайдера: " + msg : "");
+  }
+
+  var NETWORK_HINT = "Не вдалося з'єднатися з провайдером. Можливі причини: немає інтернету; адресу заблоковано (VPN, фаєрвол, блокувальник реклами); " +
+    "сервер не дозволяє запити прямо з браузера (CORS) — для OpenAI-сумісного/локального сервера ввімкни CORS або вкажи інший сервер; неправильна базова адреса.";
+
+  function callProvider(cfg, system, messages, fetchImpl) {
+    var doFetch = fetchImpl || window.fetch.bind(window);
+    var req = buildRequest(cfg, system, messages);
+    return doFetch(req.url, req.init).then(function (res) {
+      return res.text().then(function (raw) {
+        var data = null;
+        try { data = raw ? JSON.parse(raw) : null; } catch (e) { data = null; }
+        if (!res.ok) throw new Error(describeHttpError(res.status, data, raw));
+        if (!data) throw new Error("Провайдер повернув відповідь не у форматі JSON.");
+        return parseResponse(cfg.provider, data);
+      });
+    }, function () {
+      throw new Error(NETWORK_HINT);
+    });
+  }
+
+  // ---------- Safe rendering ----------
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  // Croatian = Latin letters; Ukrainian = Cyrillic. Speak only Latin-script runs of a line.
+  function croatianPart(text) {
+    var parts = String(text).replace(/\*\*/g, "").split(/[Ѐ-ӿ][Ѐ-ӿ’'ʼ\s\-–—,.;:!?()«»"]*/);
+    var keep = [];
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i].replace(/^[\s\-–—•*:;,.()«»"→=]+|[\s\-–—•*:;,(«»"→=]+$/g, "").trim();
+      if (/[A-Za-zčćžšđČĆŽŠĐ]{2,}/.test(p)) keep.push(p);
+    }
+    return keep.join(". ").replace(/\s+/g, " ").trim();
+  }
+
+  function inline(text) {
+    var html = escapeHtml(text).replace(/\*\*([^*\n]+?)\*\*/g, "<strong>$1</strong>");
+    var hr = croatianPart(text);
+    if (hr.length >= 3) html += '<button type="button" class="say" data-say="' + escapeHtml(hr) + '" title="Озвучити хорватською" aria-label="Озвучити хорватською">🔊</button>';
+    return html;
+  }
+
+  function renderModelText(text) {
+    var lines = String(text).replace(/\r\n?/g, "\n").split("\n");
+    var html = "";
+    var listType = null;
+    var para = [];
+    function flushPara() {
+      if (para.length) html += "<p>" + para.join("<br>") + "</p>";
+      para = [];
+    }
+    function closeList() {
+      if (listType) html += "</" + listType + ">";
+      listType = null;
+    }
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      var bullet = /^\s*[-*•]\s+(.*)$/.exec(line);
+      var numbered = /^\s*\d+[.)]\s+(.*)$/.exec(line);
+      if (bullet || numbered) {
+        flushPara();
+        var type = bullet ? "ul" : "ol";
+        if (listType !== type) { closeList(); html += "<" + type + ">"; listType = type; }
+        html += "<li>" + inline((bullet || numbered)[1]) + "</li>";
+      } else if (!line.trim()) {
+        flushPara();
+        closeList();
+      } else {
+        closeList();
+        para.push(inline(line.replace(/^#+\s*/, "")));
+      }
+    }
+    flushPara();
+    closeList();
+    return html;
+  }
+
+  // ---------- Chat state ----------
+  function loadChat() {
+    var c = readJson(CHAT_KEY, {});
+    return {
+      messages: Array.isArray(c.messages) ? c.messages.filter(function (m) { return m && m.text && (m.role === "user" || m.role === "assistant"); }) : [],
+      mode: MODE_LABELS[c.mode] ? c.mode : "free",
+      week: c.week >= 1 && c.week <= WEEKS ? c.week : null,
+      ctx: c.ctx && typeof c.ctx === "object" ? c.ctx : null
+    };
+  }
+
+  function takeTaskContext() {
+    var raw = rawGet(CTX_KEY);
+    if (!raw) return null;
+    rawRemove(CTX_KEY);
+    var ctx;
+    try { ctx = JSON.parse(raw); } catch (e) { return null; }
+    if (!ctx || typeof ctx !== "object") return null;
+    var week = parseInt(ctx.week, 10);
+    return {
+      key: typeof ctx.key === "string" ? ctx.key : "",
+      week: week >= 1 && week <= WEEKS ? week : null,
+      taskText: typeof ctx.taskText === "string" ? ctx.taskText.trim() : "",
+      answer: typeof ctx.answer === "string" ? ctx.answer.trim() : "",
+      refText: typeof ctx.refText === "string" ? ctx.refText.trim() : ""
+    };
+  }
+
+  // ---------- TTS ----------
+  var hrVoice = null;
+  function pickVoice() {
+    if (!window.speechSynthesis) return;
+    var voices = window.speechSynthesis.getVoices();
+    hrVoice = null;
+    for (var i = 0; i < voices.length; i++) {
+      if (/^hr/i.test(voices[i].lang)) { hrVoice = voices[i]; break; }
+    }
+  }
+  function speak(text) {
+    var hint = document.getElementById("tts-hint");
+    if (!window.speechSynthesis || !text) { if (hint) hint.hidden = false; return; }
+    pickVoice();
+    if (!hrVoice && hint) hint.hidden = false;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = hrVoice ? hrVoice.lang : "hr-HR";
+    if (hrVoice) u.voice = hrVoice;
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+  }
+
+  function copyText(text, btn) {
+    function done() {
+      var old = btn.textContent;
+      btn.textContent = "Скопійовано ✓";
+      setTimeout(function () { btn.textContent = old; }, 1400);
+    }
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) { /* ignore */ }
+      ta.remove();
+      done();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  }
+
+  // ---------- Page ----------
+  function initPage() {
+    var $ = function (id) { return document.getElementById(id); };
+    var settings = loadSettings();
+    var chat = loadChat();
+    var autoWeek = detectWeek();
+    var pending = false;
+    var lastError = "";
+
+    var el = {
+      provider: $("s-provider"), baseUrlWrap: $("s-baseurl-wrap"), baseUrl: $("s-baseurl"), key: $("s-key"), model: $("s-model"),
+      save: $("s-save"), test: $("s-test"), status: $("s-status"), summary: $("settings-summary"), panel: $("settings-panel"),
+      mode: $("c-mode"), week: $("c-week"), auto: $("c-auto"), topic: $("c-topic"), newBtn: $("c-new"),
+      ctx: $("c-ctx"), ctxText: $("c-ctx-text"), ctxClear: $("c-ctx-clear"), prompt: $("prompt-preview"),
+      log: $("chat-log"), form: $("composer"), input: $("c-input"), send: $("c-send")
+    };
+
+    var incoming = takeTaskContext();
+    if (incoming) {
+      if (chat.messages.length && window.confirm("Відкрито нове завдання. Почати нову розмову для нього?\n(Скасувати — продовжити поточну розмову з контекстом цього завдання.)")) {
+        chat.messages = [];
+      }
+      chat.ctx = incoming;
+      chat.mode = "task";
+      if (incoming.week) chat.week = incoming.week;
+      saveChat();
+    }
+
+    function currentWeek() { return chat.week || autoWeek; }
+
+    function saveChat() {
+      rawSet(CHAT_KEY, JSON.stringify(chat));
+    }
+
+    // Settings form
+    function fillSettings() {
+      var p = settings.provider;
+      var cfg = activeConfig(settings);
+      el.provider.value = p;
+      el.baseUrlWrap.hidden = p !== "custom";
+      el.baseUrl.value = settings.baseUrl;
+      el.key.value = settings.keys[p] || "";
+      el.key.placeholder = p === "custom" ? "необов'язково для локального сервера" : "встав свій ключ API";
+      el.model.value = cfg.model;
+      el.model.placeholder = p === "anthropic" ? DEFAULT_MODELS.anthropic : "вкажи модель з документації провайдера";
+      updateSummary();
+    }
+    function readSettingsForm() {
+      var p = el.provider.value;
+      settings.provider = p;
+      settings.keys[p] = el.key.value.trim();
+      settings.models[p] = el.model.value.trim();
+      if (p === "custom") settings.baseUrl = el.baseUrl.value.trim();
+    }
+    function updateSummary() {
+      var cfg = activeConfig(settings);
+      var problem = configProblem(cfg);
+      el.summary.textContent = problem ? "— не налаштовано" : "— " + PROVIDER_NAMES[cfg.provider] + " · " + cfg.model;
+      el.summary.className = "chat-status " + (problem ? "err" : "ok");
+    }
+    function setStatus(text, kind) {
+      el.status.textContent = text;
+      el.status.className = "chat-status" + (kind ? " " + kind : "");
+    }
+    function persistSettings() {
+      readSettingsForm();
+      var ok = rawSet(SETTINGS_KEY, JSON.stringify(settings));
+      updateSummary();
+      return ok;
+    }
+
+    el.provider.addEventListener("change", function () {
+      settings.keys[settings.provider] = el.key.value.trim();
+      settings.models[settings.provider] = el.model.value.trim();
+      if (settings.provider === "custom") settings.baseUrl = el.baseUrl.value.trim();
+      settings.provider = el.provider.value;
+      fillSettings();
+      setStatus("", "");
+    });
+    el.save.addEventListener("click", function () {
+      var ok = persistSettings();
+      var problem = configProblem(activeConfig(settings));
+      if (!ok) setStatus("Не вдалося зберегти: localStorage недоступний.", "err");
+      else setStatus(problem ? "Збережено, але: " + problem : "Збережено ✓", problem ? "err" : "ok");
+    });
+    el.test.addEventListener("click", function () {
+      persistSettings();
+      var cfg = activeConfig(settings);
+      var problem = configProblem(cfg);
+      if (problem) { setStatus(problem, "err"); return; }
+      setStatus("Перевіряю…", "");
+      el.test.disabled = true;
+      callProvider(cfg, "You are a connection test. Reply with the single word: OK", [{ role: "user", text: "Ping" }]).then(function (text) {
+        setStatus("З'єднання працює ✓ (" + PROVIDER_NAMES[cfg.provider] + ", " + cfg.model + "): «" + text.slice(0, 40) + "»", "ok");
+      }, function (err) {
+        setStatus(err.message, "err");
+      }).then(function () { el.test.disabled = false; });
+    });
+
+    // Mode & week
+    function fillWeekSelect() {
+      var weeks = courseWeeks();
+      var html = "";
+      for (var n = 1; n <= WEEKS; n++) {
+        var w = weeks[String(n)];
+        html += '<option value="' + n + '">' + n + (w && w.title ? " · " + escapeHtml(w.title) : "") + "</option>";
+      }
+      el.week.innerHTML = html;
+    }
+    function systemPrompt() {
+      return buildSystemPrompt({
+        week: currentWeek(),
+        mode: chat.mode,
+        ctx: chat.ctx,
+        weekVocab: weekVocab(currentWeek()),
+        personalVocab: personalVocab(50)
+      });
+    }
+    function renderContext() {
+      var info = weekInfo(currentWeek());
+      el.mode.value = chat.mode;
+      el.week.value = String(currentWeek());
+      el.auto.textContent = chat.week && chat.week !== autoWeek ? "(за прогресом: тиждень " + autoWeek + ")" : "(визначено за прогресом)";
+      el.topic.innerHTML = "Тиждень " + info.week + " · етап " + info.phase + " (" + escapeHtml(info.level) + ")" +
+        (info.title ? " · тема: <b>" + escapeHtml(info.title) + "</b>" + (info.titleHr ? ' <span class="hr">' + escapeHtml(info.titleHr) + "</span>" : "") : "") +
+        (info.grammar ? " · граматика: <b>" + escapeHtml(info.grammar) + "</b>" : "");
+      if (chat.ctx && (chat.ctx.taskText || chat.ctx.key)) {
+        el.ctx.hidden = false;
+        el.ctxText.textContent = chat.ctx.taskText || chat.ctx.key;
+      } else {
+        el.ctx.hidden = true;
+      }
+      el.prompt.textContent = systemPrompt();
+    }
+    el.mode.addEventListener("change", function () { chat.mode = el.mode.value; saveChat(); renderContext(); });
+    el.week.addEventListener("change", function () {
+      var n = parseInt(el.week.value, 10);
+      chat.week = n === autoWeek ? null : n;
+      saveChat();
+      renderContext();
+    });
+    el.ctxClear.addEventListener("click", function () { chat.ctx = null; saveChat(); renderContext(); });
+    el.newBtn.addEventListener("click", function () {
+      if (chat.messages.length && !window.confirm("Почати нову розмову? Поточну буде видалено.")) return;
+      chat.messages = [];
+      chat.ctx = null;
+      lastError = "";
+      saveChat();
+      renderContext();
+      renderLog();
+      el.input.focus();
+    });
+
+    // Conversation
+    function messageHtml(m, index) {
+      if (m.role === "user") {
+        return '<div class="msg msg-user"><div class="bubble">' + escapeHtml(m.text) + "</div></div>";
+      }
+      return '<div class="msg msg-assistant"><div class="bubble">' + renderModelText(m.text) + "</div>" +
+        '<div class="msg-tools"><button type="button" data-copy="' + index + '">Копіювати</button></div></div>';
+    }
+    function renderLog() {
+      var html = "";
+      for (var i = 0; i < chat.messages.length; i++) html += messageHtml(chat.messages[i], i);
+      if (pending) html += '<div class="msg msg-assistant"><div class="bubble"><span class="typing" aria-label="AI пише відповідь"><span></span><span></span><span></span></span></div></div>';
+      if (lastError) {
+        html += '<div class="msg msg-error"><div class="bubble">' + escapeHtml(lastError).replace(/\n/g, "<br>") + "</div>" +
+          '<div class="msg-tools"><button type="button" data-retry="1">Повторити</button><button type="button" data-settings="1">Налаштування</button></div></div>';
+      }
+      if (!html) {
+        html = '<p class="chat-empty">Напиши перше повідомлення — хорватською або українською.<br>' +
+          'Порада: обери режим і тиждень угорі; розгорни «Що знає AI», щоб побачити, що отримує модель.</p>';
+      }
+      el.log.innerHTML = html;
+      el.send.disabled = pending;
+    }
+    function scrollToEnd() {
+      var last = el.log.lastElementChild;
+      if (last && last.scrollIntoView) last.scrollIntoView({ block: "end", behavior: "smooth" });
+    }
+
+    function requestReply() {
+      var cfg = activeConfig(settings);
+      var problem = configProblem(cfg);
+      if (problem) {
+        lastError = "AI ще не налаштовано: " + problem + " Відкрий «Налаштування AI-провайдера» вгорі.";
+        el.panel.open = true;
+        renderLog();
+        return;
+      }
+      pending = true;
+      lastError = "";
+      renderLog();
+      scrollToEnd();
+      var history = chat.messages.slice(-HISTORY_LIMIT);
+      callProvider(cfg, systemPrompt(), history).then(function (text) {
+        chat.messages.push({ role: "assistant", text: text, t: Date.now() });
+        saveChat();
+      }, function (err) {
+        lastError = err.message;
+      }).then(function () {
+        pending = false;
+        renderLog();
+        scrollToEnd();
+      });
+    }
+
+    el.form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (pending) return;
+      var text = el.input.value.trim();
+      if (!text) return;
+      chat.messages.push({ role: "user", text: text, t: Date.now() });
+      saveChat();
+      el.input.value = "";
+      requestReply();
+    });
+    el.input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+        event.preventDefault();
+        el.form.requestSubmit ? el.form.requestSubmit() : el.send.click();
+      }
+    });
+    el.log.addEventListener("click", function (event) {
+      var t = event.target;
+      if (t.getAttribute("data-say") !== null) speak(t.getAttribute("data-say"));
+      else if (t.getAttribute("data-copy") !== null) {
+        var m = chat.messages[parseInt(t.getAttribute("data-copy"), 10)];
+        if (m) copyText(m.text, t);
+      } else if (t.getAttribute("data-retry") !== null) {
+        if (!pending && chat.messages.length && chat.messages[chat.messages.length - 1].role === "user") requestReply();
+        else { lastError = ""; renderLog(); }
+      } else if (t.getAttribute("data-settings") !== null) {
+        el.panel.open = true;
+        el.panel.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+
+    // Selection toolbar: speak / add to personal dictionary (hr-vocab)
+    var bar = document.createElement("div");
+    bar.className = "sel-bar";
+    bar.hidden = true;
+    bar.innerHTML = '<button type="button" data-act="say">🔊</button>' +
+      '<input type="text" data-f="word" aria-label="Слово"><input type="text" data-f="tr" placeholder="переклад" aria-label="Переклад">' +
+      '<button type="button" data-act="add">+ у словник</button><span class="sel-msg"></span>';
+    document.body.appendChild(bar);
+    var barWord = bar.querySelector('[data-f="word"]');
+    var barTr = bar.querySelector('[data-f="tr"]');
+    var barMsg = bar.querySelector(".sel-msg");
+
+    function showBar() {
+      var sel = window.getSelection ? window.getSelection() : null;
+      var text = sel ? String(sel).replace(/\s+/g, " ").trim() : "";
+      if (!text || text.length > 80 || !sel.rangeCount || !el.log.contains(sel.anchorNode)) return;
+      var rect = sel.getRangeAt(0).getBoundingClientRect();
+      barWord.value = text;
+      barTr.value = "";
+      barMsg.textContent = "";
+      bar.hidden = false;
+      var left = Math.max(8, Math.min(rect.left + window.scrollX, window.scrollX + document.documentElement.clientWidth - bar.offsetWidth - 8));
+      bar.style.left = left + "px";
+      bar.style.top = (rect.bottom + window.scrollY + 6) + "px";
+    }
+    el.log.addEventListener("mouseup", function () { setTimeout(showBar, 0); });
+    el.log.addEventListener("touchend", function () { setTimeout(showBar, 300); });
+    document.addEventListener("mousedown", function (event) {
+      if (!bar.hidden && !bar.contains(event.target)) bar.hidden = true;
+    });
+    bar.addEventListener("click", function (event) {
+      var act = event.target.getAttribute("data-act");
+      if (act === "say") speak(barWord.value.trim());
+      if (act === "add") {
+        var word = barWord.value.trim();
+        var tr = barTr.value.trim();
+        if (!word || !tr) { barMsg.textContent = "впиши переклад"; barTr.focus(); return; }
+        var list;
+        try { list = JSON.parse(rawGet(VOCAB_KEY) || "[]"); } catch (e) { list = []; }
+        if (!Array.isArray(list)) list = [];
+        list.unshift({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          word: word, tr: tr, ex: "", tag: "AI-чат, тиждень " + currentWeek(), added: Date.now()
+        });
+        barMsg.textContent = rawSet(VOCAB_KEY, JSON.stringify(list)) ? "додано ✓" : "не вдалося зберегти";
+        renderContext();
+        setTimeout(function () { bar.hidden = true; }, 900);
+      }
+    });
+
+    if (window.speechSynthesis) {
+      pickVoice();
+      window.speechSynthesis.onvoiceschanged = pickVoice;
+    }
+
+    fillSettings();
+    fillWeekSelect();
+    renderContext();
+    renderLog();
+    if (configProblem(activeConfig(settings))) el.panel.open = true;
+    if (chat.messages.length) scrollToEnd();
+  }
+
+  window.HrChat = {
+    buildRequest: buildRequest,
+    parseResponse: parseResponse,
+    callProvider: callProvider,
+    buildSystemPrompt: buildSystemPrompt,
+    renderModelText: renderModelText,
+    croatianPart: croatianPart,
+    describeHttpError: describeHttpError,
+    takeTaskContext: takeTaskContext,
+    detectWeek: detectWeek
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initPage);
+  else initPage();
+})();
+</script>
+</body>
+</html>

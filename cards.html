@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Картки · хорватська</title>
+<link rel="stylesheet" href="style.css">
+<script src="vocab-data.js"></script>
+<script src="app.js" defer></script>
+<script src="workspace.js" defer></script>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">Огляд</a>
+  <a href="phase-1.html">Етап 1 · A1→A2</a>
+  <a href="phase-2.html">Етап 2 · A2→B1.1</a>
+  <a href="phase-3.html">Етап 3 · B1</a>
+  <a href="grammar.html">Граматика</a>
+  <a href="vocab.html">Словник</a>
+  <a href="cards.html">Картки</a>
+  <a href="chat.html">AI-чат</a>
+</nav>
+
+<main class="container">
+
+<header class="hero">
+  <h1>Картки</h1>
+  <p>Інтервальне повторення слів тижня та твого словника. «Знаю» переносить картку в наступну коробку (повтор через 1, 3, 7, 14 днів), «Не знаю» повертає її в першу. Прогрес зберігається в цьому браузері.</p>
+</header>
+
+<div class="cards-bar card">
+  <div class="cards-modes" role="tablist">
+    <a href="#due" data-mode="due">Повторення</a>
+    <a href="#week=1" data-mode="week">Тиждень</a>
+    <a href="#all" data-mode="all">Усі тижні</a>
+    <a href="#my" data-mode="my">Мої слова</a>
+  </div>
+  <label class="cards-week">Тиждень
+    <select id="cards-week"></select>
+  </label>
+  <label class="ws-check"><input type="checkbox" id="cards-dir"> українська → хорватська</label>
+</div>
+
+<p class="cards-stats" id="cards-stats"></p>
+<p class="cards-boxes" id="cards-boxes"></p>
+
+<section class="flashcard card" id="flashcard" aria-live="polite">
+  <div class="fc-front" id="fc-front"></div>
+  <div class="fc-back" id="fc-back" hidden></div>
+  <div class="fc-actions">
+    <button type="button" id="fc-speak" title="Прослухати (S)">🔊</button>
+    <button type="button" id="fc-show" class="fc-primary">Показати відповідь</button>
+  </div>
+  <div class="fc-grade" id="fc-grade" hidden>
+    <button type="button" data-grade="1" class="fc-no">Не знаю <kbd>1</kbd></button>
+    <button type="button" data-grade="2" class="fc-hard">Важко <kbd>2</kbd></button>
+    <button type="button" data-grade="3" class="fc-yes">Знаю <kbd>3</kbd></button>
+  </div>
+  <div id="fc-hint"></div>
+</section>
+
+<div class="card fc-empty" id="fc-empty" hidden></div>
+
+<p class="ws-help">Клавіші: пробіл — показати відповідь, 1/2/3 — оцінка, S — прослухати.</p>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var CARDS_KEY = "hr-cards";
+  var VOCAB_KEY = "hr-vocab";
+  var DIR_KEY = "hr-cards-dir";
+  var WEEKS = 36;
+  var INTERVALS = [0, 0, 1, 3, 7, 14]; // index = box 1–5
+  var DAY = 86400000;
+
+  function lsGet(key) {
+    try { return window.localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function lsSet(key, value) {
+    try { window.localStorage.setItem(key, value); } catch (e) { /* storage unavailable */ }
+  }
+  function readJson(key, fallback) {
+    try {
+      var raw = lsGet(key);
+      var v = raw ? JSON.parse(raw) : fallback;
+      return v && typeof v === "object" ? v : fallback;
+    } catch (e) { return fallback; }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function startOfToday() {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  var vocabData = window.HR_VOCAB || {};
+  var srs = readJson(CARDS_KEY, {});
+
+  function weekCards(n) {
+    var list = vocabData[n] || vocabData[String(n)] || [];
+    var cards = [];
+    var seen = {};
+    for (var i = 0; i < list.length; i++) {
+      if (!list[i] || !list[i].hr) continue;
+      var id = "w" + n + ":" + list[i].hr;
+      if (seen[id]) continue;
+      seen[id] = true;
+      cards.push({ id: id, hr: list[i].hr, uk: list[i].uk || "", ex: "", week: n });
+    }
+    return cards;
+  }
+
+  function myCards() {
+    var list = readJson(VOCAB_KEY, []);
+    if (!Array.isArray(list)) return [];
+    var cards = [];
+    for (var i = 0; i < list.length; i++) {
+      var w = list[i];
+      if (w && w.id && w.word) cards.push({ id: "my:" + w.id, hr: w.word, uk: w.tr || "", ex: w.ex || "", week: null });
+    }
+    return cards;
+  }
+
+  function weekCount(n) { return weekCards(n).length; }
+
+  // A week counts as started once any of its cards was graded or any of its tasks was ticked.
+  function startedWeeks() {
+    var started = {};
+    for (var id in srs) {
+      var m = /^w(\d+):/.exec(id);
+      if (m && srs.hasOwnProperty(id)) started[m[1]] = true;
+    }
+    try {
+      for (var i = 0; i < window.localStorage.length; i++) {
+        var k = window.localStorage.key(i);
+        var t = /^hr-b1:w(\d+)-t\d+$/.exec(k || "");
+        if (t && window.localStorage.getItem(k) === "1") started[t[1]] = true;
+      }
+    } catch (e) { /* storage unavailable */ }
+    return started;
+  }
+
+  function isDue(card, now) {
+    var s = srs[card.id];
+    return !s || !(s.due > now);
+  }
+
+  function boxOf(card) {
+    var s = srs[card.id];
+    return s && s.box ? s.box : 0;
+  }
+
+  // ---------- Routing ----------
+  function parseHash() {
+    var h = (window.location.hash || "").replace(/^#/, "");
+    var m = /^week=(\d+)$/.exec(h);
+    if (m) return { mode: "week", week: Math.min(WEEKS, Math.max(1, parseInt(m[1], 10))) };
+    if (h === "all" || h === "my" || h === "due") return { mode: h };
+    return { mode: "due" };
+  }
+
+  function deckFor(route) {
+    if (route.mode === "week") return weekCards(route.week);
+    if (route.mode === "my") return myCards();
+    var cards = [];
+    var started = route.mode === "due" ? startedWeeks() : null;
+    for (var n = 1; n <= WEEKS; n++) {
+      if (started && !started[n]) continue;
+      cards = cards.concat(weekCards(n));
+    }
+    return cards.concat(myCards());
+  }
+
+  var MODE_TITLE = { due: "Повторення", all: "Усі тижні", my: "Мої слова" };
+
+  // ---------- UI ----------
+  var weekSelect = document.getElementById("cards-week");
+  var dirBox = document.getElementById("cards-dir");
+  var statsEl = document.getElementById("cards-stats");
+  var boxesEl = document.getElementById("cards-boxes");
+  var cardEl = document.getElementById("flashcard");
+  var front = document.getElementById("fc-front");
+  var back = document.getElementById("fc-back");
+  var showBtn = document.getElementById("fc-show");
+  var speakBtn = document.getElementById("fc-speak");
+  var gradeRow = document.getElementById("fc-grade");
+  var emptyEl = document.getElementById("fc-empty");
+  var hintHolder = document.getElementById("fc-hint");
+
+  var route = null;
+  var deck = [];
+  var queue = [];
+  var current = null;
+  var revealed = false;
+  var session = { seen: 0, known: 0, again: 0 };
+
+  function fillWeekSelect() {
+    var html = "";
+    for (var n = 1; n <= WEEKS; n++) {
+      var c = weekCount(n);
+      html += '<option value="' + n + '">' + n + (c ? " · " + c + " сл." : " · немає слів") + "</option>";
+    }
+    weekSelect.innerHTML = html;
+  }
+
+  function markModes() {
+    var links = document.querySelectorAll(".cards-modes a");
+    for (var i = 0; i < links.length; i++) {
+      var on = links[i].getAttribute("data-mode") === route.mode;
+      links[i].classList.toggle("active", on);
+      links[i].setAttribute("aria-selected", on ? "true" : "false");
+      if (links[i].getAttribute("data-mode") === "week") links[i].href = "#week=" + (route.week || weekSelect.value || 1);
+    }
+    if (route.week) weekSelect.value = String(route.week);
+  }
+
+  function renderStats() {
+    var now = Date.now();
+    var due = 0;
+    var fresh = 0;
+    var boxes = [0, 0, 0, 0, 0, 0];
+    for (var i = 0; i < deck.length; i++) {
+      if (!srs[deck[i].id]) fresh++;
+      else if (isDue(deck[i], now)) due++;
+      boxes[boxOf(deck[i])]++;
+    }
+    var title = route.mode === "week" ? "Тиждень " + route.week : MODE_TITLE[route.mode];
+    statsEl.innerHTML = "<b>" + escapeHtml(title) + "</b> · у колоді: " + deck.length + " · нових: " + fresh +
+      " · до повторення: " + due + " · залишилось у сесії: " + queue.length +
+      (session.seen ? " · сьогодні: " + session.known + " ✓ / " + session.again + " ✗" : "");
+    boxesEl.innerHTML = deck.length
+      ? "Коробки: " + [1, 2, 3, 4, 5].map(function (b) { return '<span class="box-chip">' + b + ": " + boxes[b] + "</span>"; }).join(" ") +
+        ' <span class="box-chip box-new">нові: ' + boxes[0] + "</span>"
+      : "";
+  }
+
+  function emptyMessage() {
+    if (!deck.length) {
+      if (route.mode === "my") return 'У твоєму словнику ще немає слів. <a href="vocab.html">Додай слова</a> або скористайся «+ у словник» у завданнях на читання.';
+      if (route.mode === "week") return "Слова тижня " + route.week + " ще не додано на сторінку етапу.";
+      if (route.mode === "due") return 'Ще немає розпочатих тижнів. Відкрий <a href="#week=1">картки тижня 1</a> або позначай завдання на сторінках етапів.';
+      return "Слів поки немає.";
+    }
+    return (session.seen ? "Сесію завершено ✓ Повторено карток: " + session.seen + ". " : "На сьогодні все повторено ✓ ") +
+      'Наступні картки стануть доступні за розкладом. <button type="button" id="fc-cram">Пройти всю колоду ще раз</button>';
+  }
+
+  function nextCard() {
+    current = queue.shift() || null;
+    revealed = false;
+    if (!current) {
+      cardEl.hidden = true;
+      emptyEl.hidden = false;
+      emptyEl.innerHTML = emptyMessage();
+      var cram = document.getElementById("fc-cram");
+      if (cram) cram.addEventListener("click", function () { startQueue(true); });
+      renderStats();
+      return;
+    }
+    cardEl.hidden = false;
+    emptyEl.hidden = true;
+    var ukFirst = dirBox.checked;
+    front.innerHTML = ukFirst
+      ? '<span class="fc-uk">' + escapeHtml(current.uk) + "</span>"
+      : '<span class="fc-hr" lang="hr">' + escapeHtml(current.hr) + "</span>";
+    back.innerHTML = (ukFirst
+      ? '<span class="fc-hr" lang="hr">' + escapeHtml(current.hr) + "</span>"
+      : '<span class="fc-uk">' + escapeHtml(current.uk) + "</span>") +
+      (current.ex ? '<span class="fc-ex" lang="hr">' + escapeHtml(current.ex) + "</span>" : "") +
+      '<span class="fc-meta">' + (current.week ? "тиждень " + current.week : "мій словник") +
+      (srs[current.id] ? " · коробка " + srs[current.id].box : " · нова") + "</span>";
+    back.hidden = true;
+    gradeRow.hidden = true;
+    showBtn.hidden = false;
+    speakBtn.hidden = ukFirst;
+    renderStats();
+    if (hintHolder.firstChild && hintHolder.firstChild.refresh) hintHolder.firstChild.refresh();
+  }
+
+  function reveal() {
+    if (!current || revealed) return;
+    revealed = true;
+    back.hidden = false;
+    gradeRow.hidden = false;
+    showBtn.hidden = true;
+    speakBtn.hidden = false;
+    if (dirBox.checked) say();
+  }
+
+  function say() {
+    if (current && window.HRWS) window.HRWS.speak(current.hr);
+  }
+
+  function grade(g) {
+    if (!current || !revealed) return;
+    var today = startOfToday();
+    var s = srs[current.id] || { box: 1, due: today };
+    var box = s.box || 1;
+    if (g === 1) {
+      box = 1;
+      queue.push(current);
+      session.again++;
+    } else if (g === 3) {
+      box = Math.min(5, box + 1);
+      session.known++;
+    }
+    var days = g === 2 ? Math.max(1, INTERVALS[box]) : INTERVALS[box];
+    srs[current.id] = { box: box, due: today + days * DAY };
+    session.seen++;
+    lsSet(CARDS_KEY, JSON.stringify(srs));
+    nextCard();
+  }
+
+  function startQueue(all) {
+    srs = readJson(CARDS_KEY, {});
+    deck = deckFor(route);
+    var now = Date.now();
+    queue = shuffle(deck.filter(function (c) { return all || isDue(c, now); }));
+    // Review cards first, new cards after.
+    queue.sort(function (a, b) { return (srs[a.id] ? 0 : 1) - (srs[b.id] ? 0 : 1); });
+    nextCard();
+  }
+
+  function onRoute() {
+    route = parseHash();
+    session = { seen: 0, known: 0, again: 0 };
+    if (window.HRWS) window.HRWS.stop();
+    markModes();
+    startQueue(false);
+  }
+
+  function init() {
+    fillWeekSelect();
+    dirBox.checked = lsGet(DIR_KEY) === "uk";
+    if (window.HRWS) {
+      hintHolder.appendChild(window.HRWS.ttsHint(function () { return current ? current.hr : ""; }, true));
+    }
+
+    weekSelect.addEventListener("change", function () { window.location.hash = "week=" + weekSelect.value; });
+    dirBox.addEventListener("change", function () {
+      lsSet(DIR_KEY, dirBox.checked ? "uk" : "hr");
+      if (current) { queue.unshift(current); nextCard(); }
+    });
+    showBtn.addEventListener("click", reveal);
+    front.addEventListener("click", reveal);
+    speakBtn.addEventListener("click", say);
+    gradeRow.addEventListener("click", function (event) {
+      var b = event.target.closest("[data-grade]");
+      if (b) grade(parseInt(b.getAttribute("data-grade"), 10));
+    });
+    document.addEventListener("keydown", function (event) {
+      var tag = (event.target.tagName || "").toLowerCase();
+      if (tag === "input" || tag === "select" || tag === "textarea" || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key === " " || event.key === "Enter") {
+        if (tag === "button" || tag === "a") return;
+        event.preventDefault();
+        reveal();
+      } else if (event.key === "1" || event.key === "2" || event.key === "3") {
+        grade(parseInt(event.key, 10));
+      } else if (event.key === "s" || event.key === "S" || event.key === "і") {
+        say();
+      }
+    });
+    window.addEventListener("hashchange", onRoute);
+    onRoute();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+</body>
+</html>
